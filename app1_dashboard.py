@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
 # ---------------------------------------------------------------------------
-# 1. 경로 설정 및 API 키 저장/불러오기 기능
+# 1. 경로 설정 및 API 키 저장/불러오기 기능 (Streamlit Secrets 대응 추가)
 # ---------------------------------------------------------------------------
 BASE_DIR = os.path.expanduser("~/Documents/Marketing")
 BLOG_DIR = os.path.join(BASE_DIR, "blog")
@@ -28,13 +28,21 @@ def save_api_key_locally(api_key):
         return False
 
 def load_api_key_locally():
-    """저장된 API 키가 있다면 불러옵니다."""
+    """저장된 API 키가 있다면 불러옵니다. 없을 경우 Streamlit Secrets를 확인합니다."""
+    # 1순위: 로컬 파일 저장 키
     if os.path.exists(KEY_FILE_PATH):
         try:
             with open(KEY_FILE_PATH, "r", encoding="utf-8") as f:
-                return f.read().strip()
+                val = f.read().strip()
+                if val:
+                    return val
         except:
-            return ""
+            pass
+            
+    # 2순위: Streamlit Secrets 시스템 키
+    if "GEMINI_API_KEY" in st.secrets:
+        return st.secrets["GEMINI_API_KEY"]
+        
     return ""
 
 # ---------------------------------------------------------------------------
@@ -86,7 +94,7 @@ def generate_marketing_plan(api_key, keyword, category, context):
 {context}
 
 [분석 타겟 주제]
-- 키워드: {keyword}
+- 키워: {keyword}
 - 카테고리: {category} (블로그 또는 인스타그램 맞춤형 기획 제공 필요)
 
 반드시 아래 JSON 포맷 표준을 정확하게 준수하여 결과를 반환하세요. 마크다운 기호(```json 등)는 절대 포함하지 말고 순수한 JSON 문자열만 출력해야 합니다. 대괄호, 중괄호가 누락되지 않도록 주의하세요.
@@ -125,7 +133,7 @@ def generate_marketing_plan(api_key, keyword, category, context):
         raise Exception(f"Gemini API Error: {response.status_code} - {response.text}")
 
 # ---------------------------------------------------------------------------
-# 4. 고급스러운 미색 테마 UI 스타일링
+# 4. 고급스러운 미색 테마 UI 스타일링 (충돌 없는 반응형 CSS 교정 버전)
 # ---------------------------------------------------------------------------
 st.set_page_config(page_title="1단계: 실시간 트렌드 마케팅 기획기", page_icon="📈", layout="centered")
 
@@ -133,6 +141,7 @@ st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     
+    /* 1. 기본 배경 및 폰트 설정 */
     html, body, [data-testid="stAppViewContainer"] {
         background-color: #F8FAFC !important;
         font-family: 'Pretendard', sans-serif !important;
@@ -145,6 +154,7 @@ st.markdown("""
         padding: 40px 20px;
     }
     
+    /* 2. 본문 카드 컴포넌트 */
     .card {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
@@ -180,7 +190,7 @@ st.markdown("""
         margin-bottom: 15px;
     }
     
-    /* 주황색 버튼 스타일링 */
+    /* 3. 본문 주황색 작동 버튼 스타일링 */
     div.stButton > button {
         background-color: #FF5A1F !important;
         color: #FFFFFF !important;
@@ -197,13 +207,27 @@ st.markdown("""
         background-color: #E04E1A !important;
     }
     
-    /* 사이드바 스타일링 */
+    /* 4. 사이드바 전용 스타일링 (기존 충돌 코드 완전 교정) */
     [data-testid="stSidebar"] {
         background-color: #1E293B !important;
-        color: #F8FAFC !important;
     }
-    [data-testid="stSidebar"] * {
+    
+    /* 사이드바 안의 텍스트 색상 및 입력칸 레이블 강제 흰색 지정 */
+    [data-testid="stSidebar"] p, 
+    [data-testid="stSidebar"] label {
         color: #F8FAFC !important;
+        font-weight: 500 !important;
+    }
+    
+    /* 사이드바 텍스트 입력상자(Input Box) 배경 및 투명도 해제하여 시인성 확보 */
+    [data-testid="stSidebar"] input {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        caret-color: #0F172A !important;  /* 깜빡이는 포커스 커서 강제 검정색 지정 */
+        border-radius: 6px !important;
+        border: 1px solid #94A3B8 !important;
+        padding: 8px 12px !important;
+        font-size: 14px !important;
     }
     
     /* 성공 안내 박스 */
@@ -224,16 +248,16 @@ with st.sidebar:
     st.markdown("### 🔑 API 키 설정")
     st.markdown("본 프로그램을 사용하려면 Gemini API 키가 필요합니다.")
     
-    # 이전에 로컬에 저장된 키 로드
+    # 이전에 로컬 또는 Secrets에 저장된 키 로드
     stored_key = load_api_key_locally()
     
-    # 비밀번호 형태로 입력 필드 구성
-    user_api_key = st.text_input("Gemini API Key", value=stored_key, type="password", placeholder="AI Studio에서 발급받은 키 입력")
+    # 사이드바 입력창 (수정된 CSS 덕분에 정상 포커싱 및 텍스트 타이핑 가능)
+    user_api_key = st.text_input("Gemini API Key", value=stored_key, type="password", placeholder="여기를 클릭하고 키를 입력하세요")
     
-    if st.button("🔑 API 키 영구 저장"):
+    if st.button("🔑 API 키 로컬에 저장"):
         if user_api_key.strip():
             if save_api_key_locally(user_api_key):
-                st.success("API 키가 안전하게 기기에 저장되었습니다! (다음 접속 시 자동 적용)")
+                st.success("API 키가 안전하게 브라우저 로컬에 저장되었습니다! (자동 적용)")
             else:
                 st.error("저장 중 오류가 발생했습니다.")
         else:
@@ -268,7 +292,7 @@ with st.container():
 # 7. 기획 실행 및 결과 표출
 # ---------------------------------------------------------------------------
 if run_button:
-    # API 키 검증
+    # API 키 선별 (입력창 우선 -> 저장소 우선)
     api_key_to_use = user_api_key if user_api_key else stored_key
     if not api_key_to_use:
         st.error("🚨 API 키가 누락되었습니다! 왼쪽 사이드바에 Gemini API 키를 입력하고 저장 버튼을 눌러주세요.")
