@@ -172,7 +172,7 @@ def run_app2_writer(api_key, plan_data, platform_type="blog"):
 
         [원고 작성의 핵심 철칙]
         1. 분량은 무조건 1,800자 이상이어야 하며, 요약하거나 대충 서술하지 말고 세부 묘사를 아주 수려하게 늘려 작성하세요.
-        2. 실제 사람이 직접 성찰하며 쓴 것처럼 깊은 공감적 수필 톤을 유지하고, 기계적인 AI 말투나 나열식(~에 대해 알아보겠습니다, 첫째/둘째 등)을 절대 사용하지 마세요.
+        2. 실제 사람이 직접 성찰하며 쓴 것처럼 깊은 공감적 수필 톤을 유지하고, 기계적인 AI 말투나 나열식(~에 대해 알아보겠습니다, 첫째/둘째 등 단순 나열)을 절대 사용하지 마세요.
         3. 가독성이 뛰어난 전문 마크다운 구성을 채택해 주십시오.
         """
     else:
@@ -256,6 +256,7 @@ st.markdown("""
 # 사이드바 설정
 with st.sidebar:
     st.markdown("### 🔑 API 설정")
+    st.markdown("본 서비스는 Google Gemini AI를 사용합니다. 외부 공유용으로 배포 시 타인이 본인의 개별 API 키를 직접 넣어 안전하게 사용할 수 있습니다.")
     user_api_key = st.text_input(
         "Gemini API Key 입력", type="password", placeholder="AIzaSy...",
         help="Google AI Studio에서 발급받은 API 키를 넣어주세요."
@@ -272,7 +273,7 @@ else:
 # 메인 헤더
 st.markdown("""
 <div class="brand-header-area">
-    <div class="brand-main-title">⚡ AI 실시간 초고속 마케팅 원스톱 플랫폼</div>
+    <div class="brand-main-title">⚡ AI 실시간 원스톱 마케팅 오토파일럿</div>
     <div class="brand-sub-title">단어 하나만 입력하면 실시간 트렌드 기획(앱 1)과 1,800자 명품 본문 집필(앱 2)이 자동으로 정밀 연쇄 폭발 가동됩니다.</div>
 </div>
 """, unsafe_allow_html=True)
@@ -305,7 +306,7 @@ def run_autopilot_pipeline(platform_key, platform_name, save_filename, dest_dir)
             raw_context = fetch_realtime_data(user_keyword)
             
             status.update(label="1️⃣ [앱 1] 트렌드를 융합한 심리 마케팅 정밀 기획 설계 중...")
-            plan_result = generate_marketing_plan(selected_api_key, raw_context, user_keyword, platform_type=platform_key)
+            plan_result = run_app1_planner(selected_api_key, raw_context, user_keyword, platform_type=platform_key)
             
             if "error" in plan_result:
                 status.update(label="❌ [앱 1 단계] 기획 설계 도중 오류가 발생해 자동 가동을 긴급 차단합니다.", state="error")
