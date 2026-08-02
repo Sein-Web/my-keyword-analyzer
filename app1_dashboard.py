@@ -84,7 +84,7 @@ st.markdown("""
         margin-top: 20px;
     }
 </style>
-""", unsafe_allow_data_allowed=True)
+""", unsafe_allow_html=True)
 
 # --- 사이드바: API 키 및 설정 영역 ---
 with st.sidebar:
@@ -141,7 +141,7 @@ def generate_marketing_plan(api_key, keyword, naver_data, google_data):
     제시된 핵심 키워드와 포털 실시간 트렌드 데이터를 기반으로, 타겟 독자의 지갑을 열게 만드는 완벽한 '마케팅 기획서'를 작성해 주세요.
     
     [핵심 키워드]: {keyword}
-    [실시간 트네드 참고자료]:
+    [실시간 트렌드 참고자료]:
     - 네이버 실시간 뉴스: {", ".join(naver_data)}
     - 구글 뉴스 트렌드: {", ".join(google_data)}
     
@@ -182,19 +182,19 @@ def generate_marketing_plan(api_key, keyword, naver_data, google_data):
         raise Exception(f"Gemini API 호출 실패 (코드 {res.status_code}): {res.text}")
 
 # --- 메인 화면 레이아웃 구성 ---
-st.markdown('<div class="main-card">', unsafe_allow_data_allowed=True)
-st.markdown('<div class="main-title">실시간 트렌드 기반 마케팅 기획기</div>', unsafe_allow_data_allowed=True)
-st.markdown('<div class="sub-title">핵심 키워드 하나로 네이버와 구글의 실시간 뉴스 데이터를 자동 수집하고,<br>타겟 독자의 심리를 꿰뚫는 완벽한 4단계 마케팅 기획안을 도출합니다.</div>', unsafe_allow_data_allowed=True)
+st.markdown('<div class="main-card">', unsafe_allow_html=True)
+st.markdown('<div class="main-title">실시간 트렌드 기반 마케팅 기획기</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">핵심 키워드 하나로 네이버와 구글의 실시간 뉴스 데이터를 자동 수집하고,<br>타겟 독자의 심리를 꿰뚫는 완벽한 4단계 마케팅 기획안을 도출합니다.</div>', unsafe_allow_html=True)
 
-# 텍스트 입력창 (1번 레이아웃처럼 깔끔하고 정렬된 스타일)
-st.markdown('<div class="input-label">기획할 핵심 타겟 키워드를 입력해 주세요</div>', unsafe_allow_data_allowed=True)
+# 텍스트 입력창
+st.markdown('<div class="input-label">기획할 핵심 타겟 키워드를 입력해 주세요</div>', unsafe_allow_html=True)
 search_keyword = st.text_input(
     "키워드 입력창", 
     placeholder="예시) 성인 심리상담, 주말 근교 드라이브, 브랜드 창업", 
     label_visibility="collapsed"
 )
 
-st.markdown('<div class="divider"></div>', unsafe_allow_data_allowed=True)
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 # 작동 버튼 (브랜드 오렌지 컬러 적용)
 st.markdown(
@@ -217,7 +217,7 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allow_data_allowed=True
+    unsafe_allow_html=True
 )
 
 if st.button("실시간 시장 분석 및 고효율 마케팅 기획 시작"):
@@ -238,7 +238,7 @@ if st.button("실시간 시장 분석 및 고효율 마케팅 기획 시작"):
                 plan = generate_marketing_plan(api_key_to_use, search_keyword, naver_titles, google_titles)
                 status.update(label="✅ 마케팅 기획 수립 및 자동 저장 완료!", state="complete")
                 
-                # 결과 세션 저장 (추후 다운로드 및 통합 연동 대비)
+                # 결과 세션 저장
                 st.session_state['marketing_plan'] = plan
                 st.session_state['run_success'] = True
             except Exception as e:
@@ -249,18 +249,18 @@ if st.button("실시간 시장 분석 및 고효율 마케팅 기획 시작"):
 if st.session_state.get('run_success', False):
     plan = st.session_state['marketing_plan']
     
-    st.markdown('<div class="success-card">', unsafe_allow_data_allowed=True)
+    st.markdown('<div class="success-card">', unsafe_allow_html=True)
     st.subheader("🎯 추천 타겟 연관 키워드")
     st.write(", ".join([f"`#{k}`" for k in plan['target_keywords']]))
-    st.markdown('</div>', unsafe_allow_data_allowed=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="success-card">', unsafe_allow_data_allowed=True)
+    st.markdown('<div class="success-card">', unsafe_allow_html=True)
     st.subheader("🔥 독자를 사로잡는 강력한 타이틀 (Hooking)")
     for i, title in enumerate(plan['hooking_titles'], 1):
         st.write(f"**{i}.** {title}")
-    st.markdown('</div>', unsafe_allow_data_allowed=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="success-card">', unsafe_allow_data_allowed=True)
+    st.markdown('<div class="success-card">', unsafe_allow_html=True)
     st.subheader("📋 설득력을 극대화하는 4단계 마케팅 기획 프레임")
     st.write("**1단계: 주의 집중 (Hooking)**")
     st.info(plan['marketing_outline']['step1_hooking'])
@@ -270,11 +270,11 @@ if st.session_state.get('run_success', False):
     st.info(plan['marketing_outline']['step3_solution'])
     st.write("**4단계: 행동 촉구 (Action)**")
     st.info(plan['marketing_outline']['step4_action'])
-    st.markdown('</div>', unsafe_allow_data_allowed=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="success-card">', unsafe_allow_data_allowed=True)
+    st.markdown('<div class="success-card">', unsafe_allow_html=True)
     st.subheader("🎨 추천 AI 이미지 생성 영어 프롬프트")
     st.code(plan['image_prompt'], language="text")
-    st.markdown('</div>', unsafe_allow_data_allowed=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_data_allowed=True)
+st.markdown('</div>', unsafe_allow_html=True)
