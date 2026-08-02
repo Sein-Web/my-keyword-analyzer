@@ -77,7 +77,7 @@ def fetch_realtime_data(keyword):
     return context_text
 
 # -----------------------------------------------------------------------------
-# 4. Gemini 2.5 Flash API 활용 마케팅 기획서 생성 (독창적 A-C-R-S-A 프레임워크 적용)
+# 4. Gemini 2.5 Flash API 활용 마케팅 기획서 생성 (블로그/인스타 로직 완전 이원화)
 # -----------------------------------------------------------------------------
 def generate_marketing_plan(api_key, keyword, platform, trend_context):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
@@ -85,42 +85,83 @@ def generate_marketing_plan(api_key, keyword, platform, trend_context):
     
     system_instruction = (
         "You are an expert digital marketing strategist. Analyze the provided real-time search and news trend data, "
-        "then generate a highly detailed and cohesive marketing plan based strictly on the 'A-C-R-S-A' (Attract-Claim-Reason-Story-Action) persuasive writing framework. "
+        "then generate a highly detailed and cohesive marketing plan. "
         "All output text inside the JSON must be written in fluent, professional, and highly persuasive Korean."
     )
     
-    prompt = f"""
+    # 플랫폼별 프롬프트 분기 처리
+    if platform == "네이버 블로그":
+        prompt = f"""
 [Target Keyword]
 {keyword}
 
 [Selected Platform]
-{platform}
+네이버 블로그 (검색 목적형 상세 정보 탐색)
 
 [Real-time Trend Context Data]
 {trend_context}
 
 [Instructions]
-Generate a complete, high-impact marketing plan optimized for the chosen platform ({platform}).
-You must strictly apply the 'A-C-R-S-A' writing framework which maximizes conversion and readability.
-The plan must contain a powerful, detailed outline for each step of the framework, providing enough context so that the next stage content writer can expand it into an 1,800+ character blog post or structured Instagram copy.
+네이버 블로그 노출에 최적화된 마케팅 기획서를 생성하세요. 
+2단계 글쓰기 앱에서 공백 제외 최소 1,800자 이상의 신뢰도 높고 풍부한 서술형 본문이 완벽히 도출될 수 있도록 구체적인 논리와 지침을 담아야 합니다.
+'A-C-R-S-A' (Attract-Claim-Reason-Story-Action) 설득 프레임워크에 맞추어 기획서를 완성하세요.
 
 You must output ONLY a valid JSON object. Do not include markdown code block formatting (like ```json ... ```).
 The JSON object must strictly match this structure:
 {{
   "target_keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
   "hooking_titles": [
-    "Title option 1",
-    "Title option 2",
-    "Title option 3",
-    "Title option 4",
-    "Title option 5"
+    "블로그 제목 옵션 1",
+    "블로그 제목 옵션 2",
+    "블로그 제목 옵션 3",
+    "블로그 제목 옵션 4",
+    "블로그 제목 옵션 5"
   ],
   "outline": {{
-    "attract": "시선 집중(Attract): 독자의 이목을 즉시 집중시키며 핵심적인 호기심이나 문제를 제기하는 강력한 도입부 오프닝 구성안",
-    "claim": "핵심 주장(Claim): 분석된 시장 흐름을 토대로 {keyword} 개념이 어떻게 명쾌한 해답이 되는지 던지는 강력한 한 문장의 메시지",
-    "reason": "명확한 근거(Reason): 소비자가 이 주장을 신뢰하고 고개를 끄덕일 수밖에 없도록 증명하는 논리적이고 과학적인 마케팅 심리적 근거",
-    "story": "공감 사례(Story): 감성을 자극하고 확신을 심어줄 수 있는 생생한 실증 사례, 경험적 일화 혹은 극적인 비유 스토리 라인",
-    "action": "행동 제안(Action): 고객의 구매 심리가 최고조에 달했을 때, 망설임 없이 행동(구매, 문의, 참여 등)으로 연결시키는 마지막 쐐기형 제안 설계"
+    "attract": "시선 집중(Attract): 검색 유저의 유입을 유도하는 오프닝 설계 및 문제의식 유발 기획안",
+    "claim": "핵심 주장(Claim): 분석 흐름을 토대로 {keyword} 개념이 어떻게 명쾌한 해답이 되는지 던지는 강력한 한 문장",
+    "reason": "명확한 근거(Reason): 소비자가 신뢰할 수밖에 없도록 증명하는 논리적이고 객관적인 마케팅 근거",
+    "story": "공감 사례(Story): 감성을 자극하고 확신을 줄 생생한 사례, 비유 혹은 경험적 일화 구성안",
+    "action": "행동 제안(Action): 망설임 없이 상담, 구매, 문의 등으로 연결시키는 최종 제안 설계"
+  }}
+}}
+"""
+    else:  # 인스타그램 / 스레드 선택 시 (캐러셀 카드뉴스 및 감성 숏폼 최적화)
+        prompt = f"""
+[Target Keyword]
+{keyword}
+
+[Selected Platform]
+인스타그램 & 스레드 (캐러셀 카드뉴스 형태 및 감성 소통형 피드)
+
+[Real-time Trend Context Data]
+{trend_context}
+
+[Instructions]
+인스타그램 피드 및 스레드 연계 업로드에 최적화된 마케팅 기획서를 생성하세요.
+스마트폰 화면을 넘겨보는 '5~7장 캐러셀 카드뉴스' 문법에 완벽히 맞추어 각 슬라이드(장)별 배치 내용과 텍스트 아웃라인을 설계해야 합니다.
+트렌디하고 감각적인 언어를 사용하며, 2단계 글쓰기 앱에서 카드뉴스 각 페이지 디자인 텍스트 및 스레드 타래 글이 온전하게 생성되도록 구성안을 제공하세요.
+
+You must output ONLY a valid JSON object. Do not include markdown code block formatting (like ```json ... ```).
+The JSON object must strictly match this structure:
+{{
+  "target_keywords": ["인스타해시태그1", "인스타해시태그2", "인스타해시태그3", "인스타해시태그4", "인스타해시태그5"],
+  "hooking_titles": [
+    "피드 첫 장 표지 카피 1 (초강력 훅)",
+    "피드 첫 장 표지 카피 2 (호기심 유발)",
+    "피드 첫 장 표지 카피 3 (공감 자극)",
+    "피드 첫 장 표지 카피 4 (반전 대사)",
+    "피드 첫 장 표지 카피 5 (솔루션 예고)"
+  ],
+  "outline": {{
+    "slide_1_cover": "1장(표지): 스크롤을 무조건 멈추게 할 극강의 메인 카피와 비주얼 무드 설계",
+    "slide_2_problem": "2장(도입/문제제기): 독자가 무조건 공감할 만한 일상의 깊은 페인포인트(Pain Point) 표현안",
+    "slide_3_solution": "3장(핵심주장/해결책): {keyword} 개념을 적용하여 얻을 수 있는 결정적인 변화와 명쾌한 해결 제시",
+    "slide_4_reason": "4장(이유/원리): '왜 이 방법이어야 하는지' 아주 쉽고 감각적으로 축약해 풀어낸 핵심 근거",
+    "slide_5_story_or_benefit": "5장(사례/체험): 감성에 와닿는 짤막한 성공 사례, 비유 또는 직관적인 비포앤애프터 구성",
+    "slide_6_action": "6장(행동제안/CTA): '댓글 남겨주시면 발송', '프로필 링크 클릭' 등 손쉬운 동참을 제안하는 쐐기 슬라이드",
+    "slide_7_closing": "7장(마무리/엔딩): 브랜드 정체성을 남기고 여운을 주는 마침 카드 및 아웃트로 구성",
+    "threads_vibe": "스레드 및 피드 본문 구성안: 캐러셀 하단에 들어갈 편안하고 쿨한 독백체 형태의 스레드 연동 텍스트 전개 방향"
   }}
 }}
 """
@@ -271,7 +312,7 @@ st.markdown("""
         margin-right: 8px;
     }
 
-    /* 💡 제목 및 설명 영역 하단 마진 조정을 통해 입력창과의 줄간격을 넓혀줌 */
+    /* 제목 및 설명 영역 하단 마진 조정을 통해 입력창과의 줄간격을 넓혀줌 */
     .header-area {
         margin-bottom: 60px !important;
     }
@@ -322,11 +363,11 @@ st.write("")
 st.markdown("""
 <div class="header-area">
     <h1 style='text-align: center; color: #0F172A; font-size: 32px; font-weight: 800; margin-bottom: 12px;'>📈 1단계: 실시간 트렌드 마케팅 기획기</h1>
-    <p style='text-align: center; color: #64748B; font-size: 15px; margin-bottom: 0;'>실시간 트렌드에 설득력 있는 글쓰기 아키텍처를 결합해 마케팅 방향을 도출합니다.</p>
+    <p style='text-align: center; color: #64748B; font-size: 15px; margin-bottom: 0;'>실시간 트렌드에 최적의 플랫폼별 마케팅 문법을 융합합니다.</p>
 </div>
 """, unsafe_allow_html=True)
 
-# 입력 폼 컬럼 구성 (시작 주제는 빈칸으로 로드되어 입력값을 깨끗하게 받아들임)
+# 입력 폼 컬럼 구성 (시작 주제는 빈칸으로 로드)
 col1, col2 = st.columns([3, 1])
 with col1:
     keyword = st.text_input("✍️ 기획할 주제 또는 핵심 키워드를 입력하세요.", value="", placeholder="예: 바이브코딩, 여름 침구 세트")
@@ -354,33 +395,45 @@ if start_btn:
                     st.success("🎉 실시간 마케팅 기획서 작성이 완료되었습니다!")
 
 # -----------------------------------------------------------------------------
-# 8. 분석 결과 렌더링 영역 (A-C-R-S-A 관통 마케팅 구조 렌더링)
+# 8. 분석 결과 렌더링 영역 (블로그용 / 인스타용 이원화 화면 제공)
 # -----------------------------------------------------------------------------
 if "marketing_plan" in st.session_state:
     plan = st.session_state.marketing_plan
     keyword_val = st.session_state.current_keyword
     platform_val = st.session_state.current_platform
     
-    # 1. 타겟 및 연관 고효율 키워드
-    st.markdown("<div class='section-title'>🎯 타겟 및 연관 고효율 키워드</div>", unsafe_allow_html=True)
+    # 1. 타겟 및 연관 고효율 키워드 (해시태그)
+    st.markdown(f"<div class='section-title'>🎯 타겟 및 연관 고효율 {'해시태그' if platform_val == '인스타그램' else '키워드'}</div>", unsafe_allow_html=True)
     keywords_html = "".join([f"<div class='keyword-badge'>#{kw}</div>" for kw in plan.get("target_keywords", [])])
     st.markdown(f"<div class='keyword-container'>{keywords_html}</div>", unsafe_allow_html=True)
     
     # 2. 헤드라인 제안
-    st.markdown("<div class='section-title'>🔥 고클릭 감성 헤드라인 제안 (5종)</div>", unsafe_allow_html=True)
+    headline_title_text = "🔥 첫 장 표지 카피 제안 (5종)" if platform_val == "인스타그램" else "🔥 고클릭 감성 헤드라인 제안 (5종)"
+    st.markdown(f"<div class='section-title'>{headline_title_text}</div>", unsafe_allow_html=True)
     for i, title in enumerate(plan.get("hooking_titles", []), 1):
         st.markdown(f"<div class='headline-item'>{i}. {title}</div>", unsafe_allow_html=True)
         
-    # 3. 작성 아웃라인 (A-C-R-S-A 마케팅 논리 뼈대 구조)
-    st.markdown("<div class='section-title'>📝 독자 관통형 마케팅 본문 뼈대 구조 (A-C-R-S-A)</div>", unsafe_allow_html=True)
+    # 3. 작성 아웃라인 분기 처리
     outline = plan.get("outline", {})
     
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Attract (시선집중)</span> {outline.get('attract', '')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Claim (핵심주장)</span> {outline.get('claim', '')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Reason (명확근거)</span> {outline.get('reason', '')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Story (공감사례)</span> {outline.get('story', '')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Action (행동제안)</span> {outline.get('action', '')}</div>", unsafe_allow_html=True)
-    
+    if platform_val == "네이버 블로그":
+        st.markdown("<div class='section-title'>📝 블로그 작성 뼈대 구조 (A-C-R-S-A)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Attract (시선집중)</span> {outline.get('attract', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Claim (핵심주장)</span> {outline.get('claim', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Reason (명확근거)</span> {outline.get('reason', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Story (공감사례)</span> {outline.get('story', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Action (행동제안)</span> {outline.get('action', '')}</div>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div class='section-title'>📸 인스타그램 캐러셀(카드뉴스) 및 스레드 기획 구조</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Slide 1 (표지)</span> {outline.get('slide_1_cover', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Slide 2 (공감)</span> {outline.get('slide_2_problem', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Slide 3 (해결)</span> {outline.get('slide_3_solution', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Slide 4 (원리)</span> {outline.get('slide_4_reason', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Slide 5 (체험)</span> {outline.get('slide_5_story_or_benefit', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Slide 6 (제안)</span> {outline.get('slide_6_action', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>Slide 7 (엔딩)</span> {outline.get('slide_7_closing', '')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='outline-step'><span class='framework-badge'>본문 피드/스레드</span> {outline.get('threads_vibe', '')}</div>", unsafe_allow_html=True)
+        
     # 4. 파일 자동 저장 및 단순 내보내기 다운로드
     st.markdown("<div class='section-title'>💾 마케팅 기획서 최종 다운로드</div>", unsafe_allow_html=True)
     
