@@ -29,17 +29,15 @@ BASE_DIR = os.path.expanduser("~/Documents/Marketing")
 BLOG_DIR = os.path.join(BASE_DIR, "blog")
 INSTA_DIR = os.path.join(BASE_DIR, "instagram")
 
-# 폴더 자동 생성
+# 폴더 자동 생성 (로컬 가동 대비용)
 for d in [BASE_DIR, BLOG_DIR, INSTA_DIR]:
     os.makedirs(d, exist_ok=True)
 
 # 시스템 기본 키 가져오기 함수 (Secrets 또는 파일)
 def get_gemini_api_key_details():
-    # 1. Streamlit Secrets에 저장된 키가 있다면 최우선 반환
     if "GEMINI_API_KEY" in st.secrets:
         return st.secrets["GEMINI_API_KEY"], "Streamlit Secrets", "success"
         
-    # 2. 시스템 로컬 파일에서 읽기 시도
     key_path = os.path.join(BLOG_DIR, "gemini api key", "api key.txt")
     if os.path.exists(key_path):
         try:
@@ -62,7 +60,6 @@ def fetch_realtime_data(keyword):
     }
     scraped_texts = []
     
-    # 네이버 서치 뷰어 크롤링
     try:
         encoded_keyword = urllib.parse.quote(keyword)
         naver_url = f"https://search.naver.com/search.naver?query={encoded_keyword}"
@@ -77,7 +74,6 @@ def fetch_realtime_data(keyword):
     except Exception:
         pass
 
-    # 구글 뉴스 RSS 피드 파싱
     try:
         rss_url = f"https://news.google.com/rss/search?q={urllib.parse.quote(keyword)}&hl=ko&gl=KR&ceid=KR:ko"
         feed = feedparser.parse(rss_url)
@@ -98,7 +94,6 @@ def generate_marketing_plan(api_key, raw_context, user_keyword, platform_type="b
     if GEMINI_MODE == "missing":
         return {"error": "시스템에 Google Gemini 패키지가 설치되어 있지 않습니다.\n터미널에 'pip install google-genai'를 실행해 주세요."}
 
-    # 사장님이 만족해하셨던 풍성하고 깊이 있는 오리지널 프롬프트 스키마 그대로 사용
     prompt = f"""
     [사용자 핵심 주제어]: {user_keyword}
     [실시간 수집 시장 데이터]:
@@ -145,7 +140,6 @@ def generate_marketing_plan(api_key, raw_context, user_keyword, platform_type="b
             response = model.generate_content(prompt)
             raw_text = response.text
 
-        # JSON 정제 후 파싱
         cleaned_response = raw_text.strip()
         if cleaned_response.startswith("```"):
             cleaned_response = re.sub(r"^```(?:json)?", "", cleaned_response, flags=re.IGNORECASE)
@@ -167,7 +161,6 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* 1. 웹 전역 배경: 부드러운 스노우 그레이 톤으로 감각적으로 채움 */
     html, body, [data-testid="stAppViewContainer"] {
         background-color: #F8FAFC !important;
         font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
@@ -177,25 +170,21 @@ st.markdown("""
         background-color: rgba(0,0,0,0);
     }
 
-    /* 2. 기획기 사각 박스 가로폭 고정 및 초고급 카드 섀도우 효과 */
     [data-testid="stMainBlockContainer"] {
-        max-width: 860px !important; /* 3번 피드백 영역 사이즈 반영 */
+        max-width: 860px !important; 
         margin: 50px auto !important;
         padding: 40px 50px !important;
         background-color: #FFFFFF !important;
         border-radius: 20px !important;
-        /* 복잡하고 촌스러운 테두리를 제거하고 은은하고 웅장한 소프트 섀도우 처리 */
         box-shadow: 0 20px 50px rgba(15, 23, 42, 0.04) !important;
         border: none !important;
     }
 
-    /* 3. 명품 디자이너 톤 서체 세팅 */
     h1, h2, h3, h4, h5, h6, p, label, span {
-        color: #1E293B !important; /* 소프트 차콜 */
+        color: #1E293B !important; 
         font-weight: 600;
     }
 
-    /* 4. 브랜딩 헤더 라인 */
     .brand-header-area {
         text-align: center;
         margin-bottom: 35px;
@@ -205,7 +194,7 @@ st.markdown("""
     .brand-main-title {
         font-size: 26px;
         font-weight: 850;
-        color: #1E3A8A !important; /* 딥 미드나잇 블루 */
+        color: #1E3A8A !important; 
         letter-spacing: -0.7px;
     }
     .brand-sub-title {
@@ -215,7 +204,6 @@ st.markdown("""
         margin-top: 6px;
     }
 
-    /* 5. 탭 메뉴 초현대식 디자인 튜닝 */
     button[data-baseweb="tab"] {
         background-color: transparent !important;
         color: #94A3B8 !important;
@@ -229,7 +217,6 @@ st.markdown("""
         border-bottom: 3px solid #1E3A8A !important;
     }
 
-    /* 6. 입력 상자 프리미엄 가공 */
     div[data-baseweb="input"] {
         background-color: #F8FAFC !important;
         border: 1px solid #E2E8F0 !important;
@@ -240,7 +227,6 @@ st.markdown("""
         font-weight: 500 !important;
     }
 
-    /* 7. 명품 오렌지(#FF5A1F) 원색 실행 버튼 */
     div.stButton > button {
         background-color: #FF5A1F !important;
         color: #FFFFFF !important;
@@ -259,7 +245,6 @@ st.markdown("""
         transform: translateY(-1px);
     }
 
-    /* 8. 1번 스타일 복원용 좌측 정렬 결과 영역 뱃지 */
     .expert-sec-title {
         font-size: 17px;
         font-weight: 800;
@@ -278,7 +263,6 @@ st.markdown("""
         margin-bottom: 18px;
     }
 
-    /* 줄글 출력용 세련된 명품 폰트 텍스트 스타일 */
     .row-text-line {
         font-size: 14.5px;
         color: #334155;
@@ -322,7 +306,6 @@ st.markdown("""
         line-height: 1.7;
     }
 
-    /* 기본 부스러기 제거 */
     footer {visibility: hidden;}
     #MainMenu {visibility: hidden;}
 </style>
@@ -333,7 +316,6 @@ with st.sidebar:
     st.markdown("### 🔑 API 설정")
     st.markdown("본 서비스는 Google Gemini AI를 사용합니다. 외부 공유용으로 배포 시 타인이 본인의 개별 API 키를 직접 넣어 안전하게 사용할 수 있습니다.")
     
-    # 비밀 키 입력 마스킹 필드
     user_api_key = st.text_input(
         "Gemini API Key 입력",
         type="password",
@@ -343,7 +325,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("💡 **Gemini API 키 발급은 어디서 하나요?**\n[Google AI Studio](https://aistudio.google.com/)에서 로그인 후 클릭 한 번으로 무료 발급 가능합니다.")
 
-# API 키 자동 세팅 (1순위: 사용자가 사이드바에 입력한 키 / 2순위: 서버 백그라운드 키)
+# API 키 자동 세팅
 selected_api_key = ""
 if user_api_key.strip():
     selected_api_key = user_api_key.strip()
@@ -356,7 +338,6 @@ else:
 # 6. 메인 뷰 구성
 # -----------------------------------------------------------------------------
 
-# 헤더 탑 박스
 st.markdown("""
 <div class="brand-header-area">
     <div class="brand-main-title">🔑 AI 실시간 핵심 키워드 기획기</div>
@@ -364,7 +345,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 탭 메뉴 구현
 tab_blog, tab_insta = st.tabs(["📝 블로그 분석 대시보드", "📸 인스타그램 분석 대시보드"])
 
 def run_application_layout(platform_name, platform_key, save_filename, dest_dir):
@@ -398,19 +378,25 @@ def run_application_layout(platform_name, platform_key, save_filename, dest_dir)
                 st.error(result["error"])
                 return
             
-            status.update(label="✅ 분석과 정밀 기획 가이드라인 수립 완료!", state="complete")
+                status.update(label="✅ 분석과 정밀 기획 가이드라인 수립 완료!", state="complete")
         
-        # 로컬 세이브 파일 출력
+        # 세션 상태에 결과 일시 저장
+        st.session_state[f"saved_result_{platform_key}"] = result
+        st.session_state[f"saved_keyword_{platform_key}"] = user_keyword
+        
+        # 로컬 폴더 자동 세이브 (사용자가 컴퓨터에서 독립 실행하는 경우)
         save_path = os.path.join(dest_dir, save_filename)
         try:
             with open(save_path, "w", encoding="utf-8") as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            st.warning(f"로컬 디스크 백업 실패: {e}")
+        except Exception:
+            pass
 
-        # ---------------------------------------------------------------------
-        # 1번 피드백 반영: 깔끔하고 고급스러운 좌측 정렬 줄글 결과 뷰
-        # ---------------------------------------------------------------------
+    # 결과가 존재할 때 정밀 정렬 뷰 제공 및 웹 다운로드 기능 제공
+    if f"saved_result_{platform_key}" in st.session_state:
+        result = st.session_state[f"saved_result_{platform_key}"]
+        user_keyword = st.session_state[f"saved_keyword_{platform_key}"]
+
         st.write("")
         st.markdown(f"### 📋 '{user_keyword}' 실시간 콘텐츠 기획 보고서")
         st.write("")
@@ -423,7 +409,7 @@ def run_application_layout(platform_name, platform_key, save_filename, dest_dir)
         tags_html = "".join([f'<span class="row-keyword-tag">#{kw}</span>' for kw in keywords[:5]])
         st.markdown(f'<div style="margin-bottom: 25px;">{tags_html}</div>', unsafe_allow_html=True)
 
-        # Section 2. 추천 카피 타이틀 줄글 정렬 (1번 레이아웃 복원)
+        # Section 2. 추천 카피 타이틀 줄글 정렬
         st.markdown('<div class="expert-sec-title">🔥 썸네일 & 콘텐츠 대표 타이틀 추천 카피</div>', unsafe_allow_html=True)
         st.markdown('<div class="expert-sec-sub">소비자의 흥미와 반응률을 직관적으로 증폭시키는 헤드라인 카피 리스트입니다. (마우스 드래그로 복사 가능)</div>', unsafe_allow_html=True)
         
@@ -431,13 +417,11 @@ def run_application_layout(platform_name, platform_key, save_filename, dest_dir)
         for idx, t in enumerate(titles[:5]):
             st.markdown(f'<div class="row-text-line"><strong>{idx+1}순위:</strong> {t}</div>', unsafe_allow_html=True)
 
-        # Section 3. 마케팅 기법 적용 본문 4단계 (깔끔하고 트렌디하게 가공)
+        # Section 3. 마케팅 기법 적용 본문 4단계
         st.markdown('<div class="expert-sec-title">📊 마케팅 공식 4단계 본문 골격 기획안</div>', unsafe_allow_html=True)
         st.markdown('<div class="expert-sec-sub">이탈 방지 및 최종 타겟 전환율 상승을 보장하는 설득 지향적 구조 설계안입니다.</div>', unsafe_allow_html=True)
 
         outline = result.get("outline", {})
-        
-        # 1단계
         st.markdown(f"""
         <div class="row-4step-box">
             <div class="row-4step-label">🚨 1단계: 문제 상황 정의 (Problem)</div>
@@ -445,7 +429,6 @@ def run_application_layout(platform_name, platform_key, save_filename, dest_dir)
         </div>
         """, unsafe_allow_html=True)
         
-        # 2단계
         st.markdown(f"""
         <div class="row-4step-box">
             <div class="row-4step-label">🤝 2단계: 유대감 및 공감대 형성 (Empathy)</div>
@@ -453,7 +436,6 @@ def run_application_layout(platform_name, platform_key, save_filename, dest_dir)
         </div>
         """, unsafe_allow_html=True)
         
-        # 3단계
         st.markdown(f"""
         <div class="row-4step-box">
             <div class="row-4step-label">💡 3단계: 논리적 해결책 처방 (Solution)</div>
@@ -461,7 +443,6 @@ def run_application_layout(platform_name, platform_key, save_filename, dest_dir)
         </div>
         """, unsafe_allow_html=True)
         
-        # 4단계
         st.markdown(f"""
         <div class="row-4step-box">
             <div class="row-4step-label">⚡ 4단계: 행동 전환 촉구 (CTA)</div>
@@ -476,9 +457,20 @@ def run_application_layout(platform_name, platform_key, save_filename, dest_dir)
         img_prompt = result.get("image_prompt", "")
         st.markdown(f'<div class="row-text-line" style="font-family: monospace; background-color: #F1F5F9; border-left: 3px solid #FF5A1F;">{img_prompt}</div>', unsafe_allow_html=True)
 
-        st.success(f"💾 로컬 디렉토리 데이터 파일 저장 완료: `{save_filename}`")
+        # --- 🚀 웹 전용 기획 파일 소장 다운로드 기능 추가 ---
+        st.markdown("---")
+        st.markdown("### 📥 기획서 파일 저장하기")
+        st.markdown("다운로드 버튼을 누르면 기획 정보가 담긴 JSON 파일이 컴퓨터나 모바일 다운로드 폴더에 안전하게 보관됩니다. 이 파일을 **2단계 본문 자동 집필기**에 업로드하여 빠르게 원고를 집필하실 수 있습니다.")
+        
+        json_data = json.dumps(result, ensure_ascii=False, indent=2)
+        st.download_button(
+            label=f"📥 [{platform_name}] 기획서 JSON 파일 다운로드",
+            data=json_data,
+            file_name=save_filename,
+            mime="application/json",
+            key=f"download_btn_{platform_key}"
+        )
 
-# 각 탭 매핑 활성화
 with tab_blog:
     run_application_layout("블로그", "blog", "today_topic.json", BLOG_DIR)
 
