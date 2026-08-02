@@ -152,7 +152,7 @@ The JSON object must strictly match this structure:
         return None
 
 # -----------------------------------------------------------------------------
-# 5. UI 및 스타일 정의 (콤팩트 너비, C 단축키 원천 차단, 입력창 복구)
+# 5. UI 및 스타일 정의 (콤팩트 너비, C 단축키 원천 차단, 입력창 복구, 줄간격 최적화)
 # -----------------------------------------------------------------------------
 st.set_page_config(page_title="실시간 트렌드 마케팅 기획기", layout="centered")
 
@@ -270,6 +270,11 @@ st.markdown("""
         font-size: 13px;
         margin-right: 8px;
     }
+
+    /* 💡 제목 및 설명 영역 하단 마진 조정을 통해 입력창과의 줄간격을 넓혀줌 */
+    .header-area {
+        margin-bottom: 60px !important;
+    }
 </style>
 
 <!-- Cmd+C / Ctrl+C 단축키 오작동 원천 차단 스크립트 -->
@@ -311,11 +316,15 @@ with st.sidebar:
     st.markdown("[👉 Google AI Studio 키 발급받기](https://aistudio.google.com/)")
 
 # -----------------------------------------------------------------------------
-# 7. 메인 화면 UI (1단계 대시보드 - 컴팩트 너비)
+# 7. 메인 화면 UI (1단계 대시보드 - 컴팩트 너비, 타이틀 하단 여백 추가)
 # -----------------------------------------------------------------------------
 st.write("")
-st.markdown("<h1 style='text-align: center; color: #0F172A; font-size: 32px; font-weight: 800; margin-bottom: 5px;'>📈 1단계: 실시간 트렌드 마케팅 기획기</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #64748B; font-size: 15px; margin-bottom: 40px;'>실시간 트렌드에 설득력 있는 글쓰기 아키텍처를 결합해 마케팅 방향을 도출합니다.</p>", unsafe_allow_html=True)
+st.markdown("""
+<div class="header-area">
+    <h1 style='text-align: center; color: #0F172A; font-size: 32px; font-weight: 800; margin-bottom: 12px;'>📈 1단계: 실시간 트렌드 마케팅 기획기</h1>
+    <p style='text-align: center; color: #64748B; font-size: 15px; margin-bottom: 0;'>실시간 트렌드에 설득력 있는 글쓰기 아키텍처를 결합해 마케팅 방향을 도출합니다.</p>
+</div>
+""", unsafe_allow_html=True)
 
 # 입력 폼 컬럼 구성 (시작 주제는 빈칸으로 로드되어 입력값을 깨끗하게 받아들임)
 col1, col2 = st.columns([3, 1])
@@ -372,7 +381,7 @@ if "marketing_plan" in st.session_state:
     st.markdown(f"<div class='outline-step'><span class='framework-badge'>Story (공감사례)</span> {outline.get('story', '')}</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='outline-step'><span class='framework-badge'>Action (행동제안)</span> {outline.get('action', '')}</div>", unsafe_allow_html=True)
     
-    # 4. 파일 자동 저장 및 단순 내보내기 다운로드 (구구절절한 설명 및 유령박스 배제)
+    # 4. 파일 자동 저장 및 단순 내보내기 다운로드
     st.markdown("<div class='section-title'>💾 마케팅 기획서 최종 다운로드</div>", unsafe_allow_html=True)
     
     date_str = datetime.now().strftime("%Y-%m-%d")
