@@ -3,6 +3,7 @@ import json
 import os
 import requests
 import urllib.parse
+from datetime import datetime
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
@@ -70,7 +71,7 @@ def fetch_realtime_data(keyword):
     return context_text.strip()
 
 # ---------------------------------------------------------------------------
-# 3. Gemini API 기반 기획서 생성 엔진
+# 3. Gemini API 기반 기획서 생성 엔진 (동양인 맞춤 고품질 이미지 프롬프트 고도화)
 # ---------------------------------------------------------------------------
 def generate_marketing_plan(api_key, keyword, category, context):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
@@ -103,7 +104,7 @@ def generate_marketing_plan(api_key, keyword, category, context):
     "step3_solution": "기획한 주제와 관련된 명확하고 구체적이며 매력적인 실질적 해결책과 행동 가이드 제시",
     "step4_cta": "자연스럽게 댓글, 공유, 이웃추가, 혹은 구매 등의 행동을 강력하게 유도하는 메시지"
   }},
-  "image_prompt": "professional-realistic-aesthetic-photography-of-{keyword}-concept-with-warm-lighting-cinematic"
+  "image_prompt": "A highly detailed warm cinematic photography of a professional stylish Korean individual engaging with {keyword} concept, soft emotional indoor studio lighting, neutral colors, 8k resolution, award-winning composition, realistic skin texture, no text"
 }}
 """
     
@@ -122,7 +123,7 @@ def generate_marketing_plan(api_key, keyword, category, context):
         raise Exception(f"Gemini API Error: {response.status_code} - {response.text}")
 
 # ---------------------------------------------------------------------------
-# 4. 정밀 보정된 감성적 미색 테마 UI 스타일링
+# 4. 정밀 보정된 감성적 미색 테마 UI 스타일링 (불필요한 사각상자 강제 박멸)
 # ---------------------------------------------------------------------------
 st.set_page_config(page_title="1단계: 실시간 트렌드 마케팅 기획기", page_icon="📈", layout="centered")
 
@@ -143,7 +144,7 @@ st.markdown("""
         padding: 40px 20px;
     }
     
-    /* 기획 입력 박스 전용 카드 스타일 (결과창에서는 카드 투명화로 상자 제거) */
+    /* 기획 입력 박스 전용 카드 스타일 (오직 이 첫 번째 입력창에만 테두리를 허용합니다) */
     .input-card {
         background: #FFFFFF;
         border: 1px solid #EAE6DF;
@@ -153,12 +154,19 @@ st.markdown("""
         margin-bottom: 35px;
     }
     
-    /* 빈 사각 테두리 제거 전용 속성 */
-    [data-testid="stVerticalBlock"] > div {
+    /* 결과창 내에 생길 수 있는 모든 Streamlit의 사각 박스 레이아웃 강제 투명화 및 테두리 소멸 */
+    div[data-testid="stVerticalBlock"] > div:not(.input-card) {
         background: transparent !important;
+        background-color: transparent !important;
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
+    }
+    
+    /* 가로줄 및 공백 박스 제거 */
+    div[class^="st-emotion-cache"] {
+        border: none !important;
+        box-shadow: none !important;
     }
     
     .brand-title {
@@ -190,7 +198,7 @@ st.markdown("""
         letter-spacing: -0.5px;
     }
     
-    /* 키워드 한 줄 나열 및 자동 너비 조절 시스템 */
+    /* 키워드 가로 배치 한 줄 나열 시스템 */
     .keyword-container {
         display: flex;
         flex-wrap: wrap;
@@ -206,10 +214,9 @@ st.markdown("""
         border-radius: 30px;
         font-size: 14px;
         font-weight: 600;
-        white-space: nowrap; /* 키워드가 길어도 내부 줄바꿈 완전 방지 */
+        white-space: nowrap;
         display: inline-block;
         border: 1px solid #E2E8F0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     
     /* 헤드라인 서식 */
@@ -226,7 +233,7 @@ st.markdown("""
         box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
     
-    /* 4단계 구조 가독성 개선 */
+    /* 4단계 마케팅 분석 가독성 패키지 */
     .framework-step {
         margin-bottom: 30px;
         line-height: 1.8;
@@ -249,7 +256,7 @@ st.markdown("""
         text-align: justify;
     }
     
-    /* 이미지 프롬프트 상자 (가로 스크롤 제거 및 자동 줄바꿈 처리) */
+    /* 이미지 프롬프트 상자 (가로 스크롤 제거 및 완벽한 가로폭 반응형 디자인) */
     .prompt-box {
         background-color: #EDF2F7 !important;
         border: 1px solid #CBD5E0 !important;
@@ -258,16 +265,13 @@ st.markdown("""
         font-family: monospace !important;
         font-size: 14px !important;
         color: #2D3748 !important;
-        white-space: pre-wrap !important;       /* CSS3 스펙 자동 줄바꿈 강제 */
-        white-space: -moz-pre-wrap !important;  /* Firefox 보정 */
-        white-space: -pre-wrap !important;       /* Opera 4-6 보정 */
-        white-space: -o-pre-wrap !important;     /* Opera 7 보정 */
-        word-wrap: break-word !important;        /* 긴 단어도 끊어서 자동 줄바꿈 */
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
         line-height: 1.5 !important;
         margin-bottom: 30px !important;
     }
     
-    /* 다운로드 전용 카드 */
+    /* 다운로드 전용 샌드위치 알림판 */
     .download-card {
         background: #FFF7ED;
         border: 1px solid #FFEDD5;
@@ -294,7 +298,7 @@ st.markdown("""
         background-color: #E04E1A !important;
     }
     
-    /* 사이드바 UI */
+    /* 사이드바 UI 디자인 */
     [data-testid="stSidebar"] {
         background-color: #1E293B !important;
     }
@@ -321,15 +325,15 @@ with st.sidebar:
     st.markdown("### 🔑 API 키 설정")
     st.markdown("본 프로그램을 사용하려면 Gemini API 키가 필요합니다.")
     
-    # 디바이스에 기저장된 파일이 존재할 때만 자동 로드하고, 없을 경우 완벽히 빈칸("") 처리하여 깨끗하게 나타냄
     stored_key = load_api_key_locally()
     
-    user_api_key = st.text_input("Gemini API Key", value=stored_key, type="password", placeholder="여기를 눌러 제미나이 키를 붙여넣으세요")
+    # 최초 접속 시에는 완벽히 빈칸("") 처리하여 깨끗하게 로드, 수동 입력 및 우클릭 복사 붙여넣기 완벽 허용
+    user_api_key = st.text_input("Gemini API Key", value=stored_key, type="password", placeholder="여기에 제미나이 API 키를 입력하세요")
     
-    if st.button("🔑 API 키 로컬에 저장"):
+    if st.button("🔑 입력한 API 키 로컬에 저장"):
         if user_api_key.strip():
             if save_api_key_locally(user_api_key):
-                st.success("API 키가 안전하게 연동 및 저장되었습니다!")
+                st.success("API 키가 브라우저에 연동 및 안전하게 기기 저장되었습니다!")
             else:
                 st.error("저장 중 오류 발생")
         else:
@@ -346,11 +350,11 @@ st.markdown('<div class="main-container">', unsafe_allow_html=True)
 st.markdown('<div class="brand-title">📈 1단계: 실시간 트렌드 마케팅 기획기</div>', unsafe_allow_html=True)
 st.markdown('<div class="brand-subtitle">실시간 검색 트렌드를 기반으로 고성능 마케팅 설계를 정교하게 구성합니다.</div>', unsafe_allow_html=True)
 
-# 기획 입력 영역 (여기에만 테두리 적용)
+# 기획 입력 영역
 st.markdown('<div class="input-card">', unsafe_allow_html=True)
 col1, col2 = st.columns([3, 1])
 with col1:
-    keyword = st.text_input("📝 기획할 주제 또는 핵심 키워드를 입력하세요.", placeholder="예: 성인 심리상담, 노인 주간보호센터 복지 혜택")
+    keyword = st.text_input("📝 기획할 주제 또는 핵심 키워드를 입력하세요.", placeholder="예: 성인 심리상담, 바이브코딩")
 with col2:
     category = st.selectbox("플랫폼 선택", ["네이버 블로그", "인스타그램 카드뉴스"])
     
@@ -358,12 +362,12 @@ run_button = st.button("🚀 실시간 시장 분석 및 고효율 마케팅 기
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------------
-# 7. 기획 실행 및 결과 표출 (불필요한 투명 테두리 완전 제거)
+# 7. 기획 실행 및 결과 자동 로컬 저장 / 파일 이름 정교화
 # ---------------------------------------------------------------------------
 if run_button:
     api_key_to_use = user_api_key if user_api_key else stored_key
     if not api_key_to_use:
-        st.error("🚨 API 키가 감지되지 않았습니다. 사이드바에 먼저 입력 후 저장해주세요.")
+        st.error("🚨 API 키가 감지되지 않았습니다. 왼쪽 사이드바에 먼저 입력 후 저장해주세요.")
     elif not keyword.strip():
         st.warning("🚨 분석할 주제 키워드를 채워주세요.")
     else:
@@ -382,11 +386,35 @@ if run_button:
                 st.session_state["analyzed_keyword"] = keyword
                 st.session_state["analyzed_category"] = category
                 
+                # -----------------------------------------------------------
+                # 동적 파일 관리 시스템 (자동 수동 투트랙 기획 백업 보장)
+                # -----------------------------------------------------------
+                today_str = datetime.today().strftime("%Y-%m-%d")
+                clean_keyword = "".join(c for c in keyword if c.isalnum() or c in (" ", "_", "-")).strip().replace(" ", "_")
+                
+                # 플랫폼별 폴더 격리 및 정밀화된 파일명 지정 (예: 2026-08-02_바이브코딩.json)
+                if category == "네이버 블로그":
+                    target_folder = BLOG_DIR
+                    suffix = "blog"
+                else:
+                    target_folder = INSTA_DIR
+                    suffix = "insta"
+                    
+                custom_filename = f"{today_str}_{clean_keyword}.json"
+                local_auto_save_path = os.path.join(target_folder, custom_filename)
+                
+                # 로컬에 조용히 선제 자동 백업 저장
+                with open(local_auto_save_path, "w", encoding="utf-8") as f:
+                    json.dump(plan_data, f, ensure_ascii=False, indent=2)
+                
+                st.session_state["saved_file_path"] = local_auto_save_path
+                st.session_state["custom_filename"] = custom_filename
+                
             except Exception as e:
                 status.update(label="❌ 기획 실패", state="error")
                 st.error(f"오류가 발생했습니다: {str(e)}")
 
-# 결과 출력 화면 구성 (불필요한 빈 상자 레이아웃 완전 배제)
+# 결과 출력 화면 구성
 if "plan_result" in st.session_state:
     data = st.session_state["plan_result"]
     kw = st.session_state["analyzed_keyword"]
@@ -407,7 +435,7 @@ if "plan_result" in st.session_state:
         headline_html += f'<div class="headline-item">{idx}. {title}</div>'
     st.markdown(headline_html, unsafe_allow_html=True)
     
-    # C. 4단계 마케팅 심리 프레임워크 (상자 없이 여백과 타이포그래피만으로 아름답게 구분)
+    # C. 4단계 마케팅 심리 프레임워크 (사각 테두리 일절 소멸 및 유려한 타이포그래피 구현)
     st.markdown('<div class="section-title">📊 4단계 마케팅 심리 프레임워크 분석</div>', unsafe_allow_html=True)
     outline = data.get("outline", {})
     framework_html = f"""
@@ -434,18 +462,22 @@ if "plan_result" in st.session_state:
     st.markdown('<div class="section-title">🎨 추천 비주얼 이미지 프롬프트</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="prompt-box">{data.get("image_prompt", "")}</div>', unsafe_allow_html=True)
 
-    # E. 다운로드 구역 (전용 카드)
+    # E. 다운로드 구역 (전용 샌드위치 카드형)
     st.markdown('<div class="download-card">', unsafe_allow_html=True)
     st.markdown("<h3 style='margin-top:0; color:#1A202C;'>📥 2단계 본문 집필기용 기획서 내보내기</h3>", unsafe_allow_html=True)
-    st.write("아래 버튼을 눌러 JSON 파일을 다운로드 받은 뒤, 곧바로 2단계 앱에 업로드하세요. 이 기획 흐름을 뼈대로 삼아 명품 1,800자 글을 집필합니다.")
+    
+    if "saved_file_path" in st.session_state:
+        st.info(f"💾 **자동 로컬 저장 성공!** 파일이 해당 경로에 생성되었습니다: \n`{st.session_state['saved_file_path']}`")
+        
+    st.write("로컬 파일 전송이 불가능한 원격 서버 배포의 경우, 아래 다운로드 버튼을 눌러 생성된 명명 규칙 파일을 다운로드받아 2단계 앱에 업로드하세요.")
     
     json_str = json.dumps(data, ensure_ascii=False, indent=2)
-    file_name = "today_topic.json" if cat == "네이버 블로그" else "today_topic_insta.json"
+    file_name_to_download = st.session_state.get("custom_filename", "today_topic.json")
     
     st.download_button(
-        label="📥 마케팅 기획서 JSON 다운로드",
+        label=f"📥 기획서 파일 다운로드 ({file_name_to_download})",
         data=json_str,
-        file_name=file_name,
+        file_name=file_name_to_download,
         mime="application/json"
     )
     st.markdown('</div>', unsafe_allow_html=True)
