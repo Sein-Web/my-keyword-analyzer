@@ -10,18 +10,19 @@ from bs4 import BeautifulSoup
 # ---------------------------------------------------------------------------
 # 1. 경로 설정 및 API 키 저장/불러오기 기능
 # ---------------------------------------------------------------------------
-BASE_DIR = os.path.expanduser("~/Documents/Marketing")
+BASE_DIR = os.path.expanduser("~/Documents/Marketing/today_topic")
 BLOG_DIR = os.path.join(BASE_DIR, "blog")
 INSTA_DIR = os.path.join(BASE_DIR, "instagram")
-KEY_FILE_PATH = os.path.join(BASE_DIR, "gemini_api_key.txt")
+KEY_FILE_PATH = os.path.expanduser("~/Documents/Marketing/gemini_api_key.txt")
 
-# 폴더 생성
+# 폴더 자동 생성 보장
 os.makedirs(BLOG_DIR, exist_ok=True)
 os.makedirs(INSTA_DIR, exist_ok=True)
 
 def save_api_key_locally(api_key):
     """API 키를 로컬 파일에 안전하게 저장합니다."""
     try:
+        os.makedirs(os.path.dirname(KEY_FILE_PATH), exist_ok=True)
         with open(KEY_FILE_PATH, "w", encoding="utf-8") as f:
             f.write(api_key.strip())
         return True
@@ -123,7 +124,7 @@ def generate_marketing_plan(api_key, keyword, category, context):
         raise Exception(f"Gemini API Error: {response.status_code} - {response.text}")
 
 # ---------------------------------------------------------------------------
-# 4. 정밀 보정된 감성적 미색 테마 UI 스타일링 (불필요한 사각상자 강제 박멸)
+# 4. 정밀 보정된 감성적 미색 테마 UI 스타일링 (불필요한 사각상자 강제 제거 및 팝업 방어)
 # ---------------------------------------------------------------------------
 st.set_page_config(page_title="1단계: 실시간 트렌드 마케팅 기획기", page_icon="📈", layout="centered")
 
@@ -154,18 +155,20 @@ st.markdown("""
         margin-bottom: 35px;
     }
     
-    /* 결과창 내에 생길 수 있는 모든 Streamlit의 사각 박스 레이아웃 강제 투명화 및 테두리 소멸 */
-    div[data-testid="stVerticalBlock"] > div:not(.input-card) {
+    /* 결과 화면의 불필요한 테두리 및 빈 직사각형 잔상 완벽 제거 */
+    div[data-testid="stVerticalBlock"] > div {
         background: transparent !important;
         background-color: transparent !important;
         border: none !important;
+        border-style: none !important;
         box-shadow: none !important;
         padding: 0 !important;
     }
     
-    /* 가로줄 및 공백 박스 제거 */
-    div[class^="st-emotion-cache"] {
+    /* 가로줄 및 공백 빈 테두리 박스 완전 박멸 */
+    div[class^="st-emotion-cache"], .element-container {
         border: none !important;
+        border-style: none !important;
         box-shadow: none !important;
     }
     
@@ -198,7 +201,7 @@ st.markdown("""
         letter-spacing: -0.5px;
     }
     
-    /* 키워드 가로 배치 한 줄 나열 시스템 */
+    /* 키워드 가로 배치 배지 */
     .keyword-container {
         display: flex;
         flex-wrap: wrap;
@@ -233,7 +236,7 @@ st.markdown("""
         box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
     
-    /* 4단계 마케팅 분석 가독성 패키지 */
+    /* 4단계 구조 가독성 */
     .framework-step {
         margin-bottom: 30px;
         line-height: 1.8;
@@ -256,32 +259,34 @@ st.markdown("""
         text-align: justify;
     }
     
-    /* 이미지 프롬프트 상자 (가로 스크롤 제거 및 완벽한 가로폭 반응형 디자인) */
-    .prompt-box {
+    /* 이미지 프롬프트 상자 (클릭 팝업 완벽 차단용 및 자동 줄바꿈 전용 박스) */
+    .prompt-text-box {
         background-color: #EDF2F7 !important;
         border: 1px solid #CBD5E0 !important;
         border-radius: 8px !important;
-        padding: 15px 20px !important;
-        font-family: monospace !important;
-        font-size: 14px !important;
+        padding: 18px 22px !important;
+        font-family: 'Pretendard', monospace !important;
+        font-size: 15px !important;
         color: #2D3748 !important;
         white-space: pre-wrap !important;
         word-wrap: break-word !important;
-        line-height: 1.5 !important;
-        margin-bottom: 30px !important;
+        line-height: 1.6 !important;
+        margin-bottom: 20px !important;
+        user-select: text !important; /* 팝업 트리거 없이 마우스 복사 드래그만 정상 작동 */
     }
     
-    /* 다운로드 전용 샌드위치 알림판 */
+    /* 다운로드 전용 샌드위치 아코디언형 카드 (내부에 빈 네모 상자가 나타나지 않도록 엄격 통제) */
     .download-card {
-        background: #FFF7ED;
-        border: 1px solid #FFEDD5;
-        border-radius: 16px;
-        padding: 30px;
-        text-align: center;
-        margin-top: 50px;
+        background-color: #FFF7ED !important;
+        border: 1px solid #FFEDD5 !important;
+        border-radius: 16px !important;
+        padding: 30px !important;
+        text-align: center !important;
+        margin-top: 50px !important;
+        box-shadow: none !important;
     }
     
-    /* 주황색 실행 버튼 */
+    /* 주황색 버튼 스타일 */
     div.stButton > button {
         background-color: #FF5A1F !important;
         color: #FFFFFF !important;
@@ -327,13 +332,13 @@ with st.sidebar:
     
     stored_key = load_api_key_locally()
     
-    # 최초 접속 시에는 완벽히 빈칸("") 처리하여 깨끗하게 로드, 수동 입력 및 우클릭 복사 붙여넣기 완벽 허용
+    # 최초 접속 시에는 빈칸, 마우스 우클릭 및 단축키 자유롭게 타이핑/복붙 작동
     user_api_key = st.text_input("Gemini API Key", value=stored_key, type="password", placeholder="여기에 제미나이 API 키를 입력하세요")
     
     if st.button("🔑 입력한 API 키 로컬에 저장"):
         if user_api_key.strip():
             if save_api_key_locally(user_api_key):
-                st.success("API 키가 브라우저에 연동 및 안전하게 기기 저장되었습니다!")
+                st.success("API 키가 안전하게 연동 및 기기에 저장되었습니다!")
             else:
                 st.error("저장 중 오류 발생")
         else:
@@ -387,12 +392,12 @@ if run_button:
                 st.session_state["analyzed_category"] = category
                 
                 # -----------------------------------------------------------
-                # 동적 파일 관리 시스템 (자동 수동 투트랙 기획 백업 보장)
+                # 동적 파일 관리 시스템 (요청 경로에 따른 명명 및 자동 물리 저장)
                 # -----------------------------------------------------------
                 today_str = datetime.today().strftime("%Y-%m-%d")
                 clean_keyword = "".join(c for c in keyword if c.isalnum() or c in (" ", "_", "-")).strip().replace(" ", "_")
                 
-                # 플랫폼별 폴더 격리 및 정밀화된 파일명 지정 (예: 2026-08-02_바이브코딩.json)
+                # 블로그/인스타 폴더 격리
                 if category == "네이버 블로그":
                     target_folder = BLOG_DIR
                     suffix = "blog"
@@ -403,7 +408,7 @@ if run_button:
                 custom_filename = f"{today_str}_{clean_keyword}.json"
                 local_auto_save_path = os.path.join(target_folder, custom_filename)
                 
-                # 로컬에 조용히 선제 자동 백업 저장
+                # 지정 경로 자동 로컬 저장 실행
                 with open(local_auto_save_path, "w", encoding="utf-8") as f:
                     json.dump(plan_data, f, ensure_ascii=False, indent=2)
                 
@@ -435,7 +440,7 @@ if "plan_result" in st.session_state:
         headline_html += f'<div class="headline-item">{idx}. {title}</div>'
     st.markdown(headline_html, unsafe_allow_html=True)
     
-    # C. 4단계 마케팅 심리 프레임워크 (사각 테두리 일절 소멸 및 유려한 타이포그래피 구현)
+    # C. 4단계 마케팅 심리 프레임워크 (상자 없이 완벽히 트인 레이아웃)
     st.markdown('<div class="section-title">📊 4단계 마케팅 심리 프레임워크 분석</div>', unsafe_allow_html=True)
     outline = data.get("outline", {})
     framework_html = f"""
@@ -458,18 +463,26 @@ if "plan_result" in st.session_state:
     """
     st.markdown(framework_html, unsafe_allow_html=True)
 
-    # D. 이미지 매칭 프롬프트 (자동 줄바꿈 디자인 적용)
+    # D. 이미지 매칭 프롬프트 (클릭 팝업 원천 방어 완료된 전용 박스)
     st.markdown('<div class="section-title">🎨 추천 비주얼 이미지 프롬프트</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="prompt-box">{data.get("image_prompt", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="prompt-text-box">{data.get("image_prompt", "")}</div>', unsafe_allow_html=True)
+    
+    # 이미지 프롬프트 다운로드 단독 버튼 추가
+    st.download_button(
+        label="📥 이미지 프롬프트 텍스트(.txt) 다운로드",
+        data=data.get("image_prompt", ""),
+        file_name=f"{datetime.today().strftime('%Y-%m-%d')}_{kw.replace(' ', '_')}_prompt.txt",
+        mime="text/plain"
+    )
 
-    # E. 다운로드 구역 (전용 샌드위치 카드형)
+    # E. 다운로드 구역 (고스트 보더 잔상 완전 박멸된 청정 구역)
     st.markdown('<div class="download-card">', unsafe_allow_html=True)
     st.markdown("<h3 style='margin-top:0; color:#1A202C;'>📥 2단계 본문 집필기용 기획서 내보내기</h3>", unsafe_allow_html=True)
     
     if "saved_file_path" in st.session_state:
-        st.info(f"💾 **자동 로컬 저장 성공!** 파일이 해당 경로에 생성되었습니다: \n`{st.session_state['saved_file_path']}`")
+        st.success(f"💾 **자동 로컬 저장 완료!** 지정 경로에 파일이 정확히 생성되었습니다: \n`{st.session_state['saved_file_path']}`")
         
-    st.write("로컬 파일 전송이 불가능한 원격 서버 배포의 경우, 아래 다운로드 버튼을 눌러 생성된 명명 규칙 파일을 다운로드받아 2단계 앱에 업로드하세요.")
+    st.write("원격 서버 환경의 경우, 아래 다운로드 버튼을 눌러 JSON 파일을 수동 다운로드받아 2단계 앱에 업로드하세요.")
     
     json_str = json.dumps(data, ensure_ascii=False, indent=2)
     file_name_to_download = st.session_state.get("custom_filename", "today_topic.json")
