@@ -77,7 +77,7 @@ def fetch_realtime_data(keyword):
     return context_text
 
 # -----------------------------------------------------------------------------
-# 4. Gemini 2.5 Flash API 활용 마케팅 기획서 생성 (글천개 '주주의사제' 모델 반영)
+# 4. Gemini 2.5 Flash API 활용 마케팅 기획서 생성 (독창적 A-C-R-S-A 프레임워크 적용)
 # -----------------------------------------------------------------------------
 def generate_marketing_plan(api_key, keyword, platform, trend_context):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
@@ -85,7 +85,7 @@ def generate_marketing_plan(api_key, keyword, platform, trend_context):
     
     system_instruction = (
         "You are an expert digital marketing strategist. Analyze the provided real-time search and news trend data, "
-        "then generate a highly detailed and cohesive marketing plan based strictly on the 'Ju-Ju-Ui-Sa-Je' (주주의사제) persuasive writing framework. "
+        "then generate a highly detailed and cohesive marketing plan based strictly on the 'A-C-R-S-A' (Attract-Claim-Reason-Story-Action) persuasive writing framework. "
         "All output text inside the JSON must be written in fluent, professional, and highly persuasive Korean."
     )
     
@@ -101,7 +101,7 @@ def generate_marketing_plan(api_key, keyword, platform, trend_context):
 
 [Instructions]
 Generate a complete, high-impact marketing plan optimized for the chosen platform ({platform}).
-You must strictly apply the famous 'Ju-Ju-Ui-Sa-Je' (주주의사제) writing framework which maximizes conversion and readability.
+You must strictly apply the 'A-C-R-S-A' writing framework which maximizes conversion and readability.
 The plan must contain a powerful, detailed outline for each step of the framework, providing enough context so that the next stage content writer can expand it into an 1,800+ character blog post or structured Instagram copy.
 
 You must output ONLY a valid JSON object. Do not include markdown code block formatting (like ```json ... ```).
@@ -116,13 +116,12 @@ The JSON object must strictly match this structure:
     "Title option 5"
   ],
   "outline": {{
-    "ju_attention": "주(주의집중): 독자의 시선을 즉시 강탈하고 문제의식을 일깨우는 강력한 훅과 오프닝 전개 방향",
-    "ju_claim": "주(주장): 우리가 직면한 문제에 대해 {keyword} 개념을 통해 제시하는 핵심 솔루션과 중심 논리",
-    "ui_reason": "의(이유): 왜 이 주장이 진실이고 신뢰할 수밖에 없는지 설명하는 강력한 마케팅 심리학적 근거와 이유",
-    "sa_example": "사(사례): 신뢰를 완전하게 못 박아버릴 수 있는 구체적이고 감동적인 실제 예시, 비유 또는 증거 스토리 라인",
-    "je_proposal": "제(제안): 지금 즉시 고객이 결단을 내리고 움직이게 만드는 강력한 제안 및 Call to Action 설계"
-  }},
-  "image_prompt": "An English prompt for AI image generation. It must be highly descriptive, professional, cinematic, and warm, representing the concept of {keyword} without using the keyword directly as text in the image."
+    "attract": "시선 집중(Attract): 독자의 이목을 즉시 집중시키며 핵심적인 호기심이나 문제를 제기하는 강력한 도입부 오프닝 구성안",
+    "claim": "핵심 주장(Claim): 분석된 시장 흐름을 토대로 {keyword} 개념이 어떻게 명쾌한 해답이 되는지 던지는 강력한 한 문장의 메시지",
+    "reason": "명확한 근거(Reason): 소비자가 이 주장을 신뢰하고 고개를 끄덕일 수밖에 없도록 증명하는 논리적이고 과학적인 마케팅 심리적 근거",
+    "story": "공감 사례(Story): 감성을 자극하고 확신을 심어줄 수 있는 생생한 실증 사례, 경험적 일화 혹은 극적인 비유 스토리 라인",
+    "action": "행동 제안(Action): 고객의 구매 심리가 최고조에 달했을 때, 망설임 없이 행동(구매, 문의, 참여 등)으로 연결시키는 마지막 쐐기형 제안 설계"
+  }}
 }}
 """
 
@@ -153,12 +152,10 @@ The JSON object must strictly match this structure:
         return None
 
 # -----------------------------------------------------------------------------
-# 5. UI 및 스타일 정의 (정돈된 가로폭, 복사 단축키 차단, 인풋창 완벽 지원)
+# 5. UI 및 스타일 정의 (콤팩트 너비, C 단축키 원천 차단, 입력창 복구)
 # -----------------------------------------------------------------------------
-# layout 설정을 'centered'로 변경하여 너무 넓게 퍼지지 않도록 원상복구
 st.set_page_config(page_title="실시간 트렌드 마케팅 기획기", layout="centered")
 
-# CSS 및 JavaScript 주입 (입력창 테두리 명확화, 빈 테두리 제거, C 단축키 원천 차단)
 st.markdown("""
 <style>
     /* 전체 미색 톤 배경 및 폰트 설정 */
@@ -194,7 +191,7 @@ st.markdown("""
         transform: translateY(-1px);
     }
 
-    /* 유령 사각 박스 완전히 제거 */
+    /* 유령 사각 박스 완벽 제거 */
     .report-block, .download-card, .prompt-box {
         border: none !important;
         background: transparent !important;
@@ -203,7 +200,7 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* 키워드 및 플랫폼 선택 입력창 테두리 복구 */
+    /* 키워드 및 플랫폼 선택 입력창 테두리 명확히 노출 */
     div[data-testid="stTextInput"] input, div[data-testid="stSelectbox"] select, div[data-testid="stSelectbox"] div[role="combobox"] {
         border: 2px solid #E2E8F0 !important;
         background-color: #FFFFFF !important;
@@ -217,7 +214,7 @@ st.markdown("""
         box-shadow: 0 0 0 2px rgba(255, 90, 31, 0.2) !important;
     }
 
-    /* 키워드 태그 정렬 (줄바꿈 방지) */
+    /* 키워드 태그 정렬 (가로 정렬 유지, 강제 줄바꿈 방지) */
     .keyword-container {
         display: flex;
         flex-wrap: wrap;
@@ -247,7 +244,7 @@ st.markdown("""
         box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
-    /* 아웃라인 섹션 타이틀 및 본문 줄간격 가독성 개선 */
+    /* 아웃라인 섹션 타이틀 및 가독성 좋은 본문 텍스트 */
     .section-title {
         font-size: 20px;
         font-weight: 700;
@@ -273,50 +270,9 @@ st.markdown("""
         font-size: 13px;
         margin-right: 8px;
     }
-
-    /* 프롬프트 출력 에어리어 (가로 바 없이 세로로 줄바꿈 자동 적용) */
-    .prompt-text {
-        background-color: #F1F5F9;
-        color: #334155;
-        padding: 15px;
-        border-radius: 8px;
-        font-family: monospace;
-        font-size: 14px;
-        line-height: 1.6;
-        white-space: pre-wrap;
-        word-break: break-all;
-        margin-bottom: 10px;
-        border: 1px solid #CBD5E1;
-    }
-
-    /* 복사 헤더 컨테이너 (복사버튼을 우상단 배치하기 위함) */
-    .prompt-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-
-    /* 순수 복사 아이콘 전용 버튼 스타일 */
-    .icon-copy-btn {
-        background: none !important;
-        border: none !important;
-        cursor: pointer !important;
-        padding: 5px !important;
-        color: #475569 !important;
-        border-radius: 4px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.2s, color 0.2s;
-    }
-    .icon-copy-btn:hover {
-        background-color: #E2E8F0 !important;
-        color: #0F172A !important;
-    }
 </style>
 
-<!-- Cmd+C / Ctrl+C를 눌렀을 때 Streamlit 단축키 팝업(Clear cache) 차단 스크립트 -->
+<!-- Cmd+C / Ctrl+C 단축키 오작동 원천 차단 스크립트 -->
 <script>
     document.addEventListener('keydown', function(e) {
         if (e.key === 'c' || e.key === 'C') {
@@ -359,34 +315,37 @@ with st.sidebar:
 # -----------------------------------------------------------------------------
 st.write("")
 st.markdown("<h1 style='text-align: center; color: #0F172A; font-size: 32px; font-weight: 800; margin-bottom: 5px;'>📈 1단계: 실시간 트렌드 마케팅 기획기</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #64748B; font-size: 15px; margin-bottom: 40px;'>실시간 검색 트렌드에 마케팅 글쓰기 '주주의사제' 공식을 융합합니다.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #64748B; font-size: 15px; margin-bottom: 40px;'>실시간 트렌드에 설득력 있는 글쓰기 아키텍처를 결합해 마케팅 방향을 도출합니다.</p>", unsafe_allow_html=True)
 
-# 입력 폼 컬럼 구성 (가로폭 기본 레이아웃 내에서 정돈)
+# 입력 폼 컬럼 구성 (시작 주제는 빈칸으로 로드되어 입력값을 깨끗하게 받아들임)
 col1, col2 = st.columns([3, 1])
 with col1:
-    keyword = st.text_input("✍️ 기획할 주제 또는 핵심 키워드를 입력하세요.", value="바이브코딩", placeholder="예: 바이브코딩, 여름 침구 세트")
+    keyword = st.text_input("✍️ 기획할 주제 또는 핵심 키워드를 입력하세요.", value="", placeholder="예: 바이브코딩, 여름 침구 세트")
 with col2:
     platform = st.selectbox("플랫폼 선택", ["네이버 블로그", "인스타그램"])
 
 start_btn = st.button("🚀 실시간 시장 분석 및 고효율 마케팅 기획 시작")
 
 if start_btn:
-    api_key = st.session_state.api_key
-    if not api_key:
-        st.error("오류: 사이드바에서 Gemini API 키를 먼저 설정하고 저장해 주세요.")
+    if not keyword.strip():
+        st.error("오류: 분석 및 기획을 원하시는 키워드 혹은 주제를 입력해 주세요.")
     else:
-        with st.spinner("실시간 트렌드를 분석하고 기획안을 수립 중입니다..."):
-            trend_data = fetch_realtime_data(keyword)
-            plan = generate_marketing_plan(api_key, keyword, platform, trend_data)
-            
-            if plan:
-                st.session_state.marketing_plan = plan
-                st.session_state.current_keyword = keyword
-                st.session_state.current_platform = platform
-                st.success("🎉 실시간 마케팅 기획서 작성이 완료되었습니다!")
+        api_key = st.session_state.api_key
+        if not api_key:
+            st.error("오류: 사이드바에서 Gemini API 키를 먼저 설정하고 저장해 주세요.")
+        else:
+            with st.spinner("실시간 트렌드를 분석하고 기획안을 수립 중입니다..."):
+                trend_data = fetch_realtime_data(keyword)
+                plan = generate_marketing_plan(api_key, keyword, platform, trend_data)
+                
+                if plan:
+                    st.session_state.marketing_plan = plan
+                    st.session_state.current_keyword = keyword
+                    st.session_state.current_platform = platform
+                    st.success("🎉 실시간 마케팅 기획서 작성이 완료되었습니다!")
 
 # -----------------------------------------------------------------------------
-# 8. 분석 결과 렌더링 영역 (글천개 '주주의사제' 마케팅 구조 렌더링)
+# 8. 분석 결과 렌더링 영역 (A-C-R-S-A 관통 마케팅 구조 렌더링)
 # -----------------------------------------------------------------------------
 if "marketing_plan" in st.session_state:
     plan = st.session_state.marketing_plan
@@ -403,37 +362,17 @@ if "marketing_plan" in st.session_state:
     for i, title in enumerate(plan.get("hooking_titles", []), 1):
         st.markdown(f"<div class='headline-item'>{i}. {title}</div>", unsafe_allow_html=True)
         
-    # 3. 작성 아웃라인 (★ 글천개 주주의사제 마케팅 본질 뼈대 복원)
-    st.markdown("<div class='section-title'>📝 글천개 주주의사제(主主意事例) 마케팅 뼈대 구조</div>", unsafe_allow_html=True)
+    # 3. 작성 아웃라인 (A-C-R-S-A 마케팅 논리 뼈대 구조)
+    st.markdown("<div class='section-title'>📝 독자 관통형 마케팅 본문 뼈대 구조 (A-C-R-S-A)</div>", unsafe_allow_html=True)
     outline = plan.get("outline", {})
     
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>주 (주의집중)</span> {outline.get('ju_attention', '')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>주 (주장/논점)</span> {outline.get('ju_claim', '')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>의 (이유/근거)</span> {outline.get('ui_reason', '')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>사 (사례/스토리)</span> {outline.get('sa_example', '')}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='outline-step'><span class='framework-badge'>제 (제안/CTA)</span> {outline.get('je_proposal', '')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Attract (시선집중)</span> {outline.get('attract', '')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Claim (핵심주장)</span> {outline.get('claim', '')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Reason (명확근거)</span> {outline.get('reason', '')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Story (공감사례)</span> {outline.get('story', '')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='outline-step'><span class='framework-badge'>Action (행동제안)</span> {outline.get('action', '')}</div>", unsafe_allow_html=True)
     
-    # 4. 이미지 생성 프롬프트 영역 (상자 바로 위에 글자 없는 네모 겹침 복사 아이콘 배치)
-    st.markdown("<div class='section-title'>🖼️ AI 이미지 생성 전용 프롬프트 (English)</div>", unsafe_allow_html=True)
-    img_prompt = plan.get("image_prompt", "")
-    
-    # 복사 로직 개선 (아이콘 클릭 시 클립보드 복사 실행 자바스크립트 내장)
-    # 텍스트 없이 네모가 겹친 콤팩트 아이콘만 표시하며, 프롬프트 입력창 바로 우상단 정렬
-    prompt_header_html = f"""
-    <div class="prompt-header">
-        <span style="font-size: 13px; color: #64748B; font-weight: 500;">AI Prompt</span>
-        <button class="icon-copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('img-prompt-text').innerText); alert('📋 프롬프트 복사가 완료되었습니다!');" title="복사하기">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-        </button>
-    </div>
-    """
-    st.markdown(prompt_header_html, unsafe_allow_html=True)
-    st.markdown(f"<div class='prompt-text' id='img-prompt-text'>{img_prompt}</div>", unsafe_allow_html=True)
-    
-    # 5. 파일 자동 저장 및 단순 내보내기 다운로드
+    # 4. 파일 자동 저장 및 단순 내보내기 다운로드 (구구절절한 설명 및 유령박스 배제)
     st.markdown("<div class='section-title'>💾 마케팅 기획서 최종 다운로드</div>", unsafe_allow_html=True)
     
     date_str = datetime.now().strftime("%Y-%m-%d")
