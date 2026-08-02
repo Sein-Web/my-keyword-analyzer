@@ -77,7 +77,7 @@ def fetch_realtime_data(keyword):
     return context_text
 
 # -----------------------------------------------------------------------------
-# 4. Gemini 2.5 Flash API 활용 마케팅 기획서 생성 (블로그/인스타 로직 완전 이원화)
+# 4. Gemini 2.5 Flash API 활용 마케팅 기획서 생성 (독창적 A-C-R-S-A 프레임워크 적용)
 # -----------------------------------------------------------------------------
 def generate_marketing_plan(api_key, keyword, platform, trend_context):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
@@ -89,7 +89,6 @@ def generate_marketing_plan(api_key, keyword, platform, trend_context):
         "All output text inside the JSON must be written in fluent, professional, and highly persuasive Korean."
     )
     
-    # 플랫폼별 프롬프트 분기 처리
     if platform == "네이버 블로그":
         prompt = f"""
 [Target Keyword]
@@ -126,7 +125,7 @@ The JSON object must strictly match this structure:
   }}
 }}
 """
-    else:  # 인스타그램 / 스레드 선택 시 (캐러셀 카드뉴스 및 감성 숏폼 최적화)
+    else:  # 인스타그램 / 스레드 선택 시
         prompt = f"""
 [Target Keyword]
 {keyword}
@@ -155,12 +154,12 @@ The JSON object must strictly match this structure:
   ],
   "outline": {{
     "slide_1_cover": "1장(표지): 스크롤을 무조건 멈추게 할 극강의 메인 카피와 비주얼 무드 설계",
-    "slide_2_problem": "2장(도입/문제제기): 독자가 무조건 공감할 만한 일상의 깊은 페인포인트(Pain Point) 표현안",
-    "slide_3_solution": "3장(핵심주장/해결책): {keyword} 개념을 적용하여 얻을 수 있는 결정적인 변화와 명쾌한 해결 제시",
-    "slide_4_reason": "4장(이유/원리): '왜 이 방법이어야 하는지' 아주 쉽고 감각적으로 축약해 풀어낸 핵심 근거",
-    "slide_5_story_or_benefit": "5장(사례/체험): 감성에 와닿는 짤막한 성공 사례, 비유 또는 직관적인 비포앤애프터 구성",
-    "slide_6_action": "6장(행동제안/CTA): '댓글 남겨주시면 발송', '프로필 링크 클릭' 등 손쉬운 동참을 제안하는 쐐기 슬라이드",
-    "slide_7_closing": "7장(마무리/엔딩): 브랜드 정체성을 남기고 여운을 주는 마침 카드 및 아웃트로 구성",
+    "slide_2_problem": "2장(도입/문제제기) 독자가 무조건 공감할 만한 일상의 깊은 페인포인트(Pain Point) 표현안",
+    "slide_3_solution": "3장(핵심주장/해결책) {keyword} 개념을 적용하여 얻을 수 있는 결정적인 변화와 명쾌한 해결 제시",
+    "slide_4_reason": "4장(이유/원리) '왜 이 방법이어야 하는지' 아주 쉽고 감각적으로 축약해 풀어낸 핵심 근거",
+    "slide_5_story_or_benefit": "5장(사례/체험) 감성에 와닿는 짤막한 성공 사례, 비유 또는 직관적인 비포앤애프터 구성",
+    "slide_6_action": "6장(행동제안/CTA) '댓글 남겨주시면 발송', '프로필 링크 클릭' 등 손쉬운 동참을 제안하는 쐐기 슬라이드",
+    "slide_7_closing": "7장(마무리/엔딩) 브랜드 정체성을 남기고 여운을 주는 마침 카드 및 아웃트로 구성",
     "threads_vibe": "스레드 및 피드 본문 구성안: 캐러셀 하단에 들어갈 편안하고 쿨한 독백체 형태의 스레드 연동 텍스트 전개 방향"
   }}
 }}
@@ -180,7 +179,7 @@ The JSON object must strictly match this structure:
     }
     
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=20)
+        response = requests.post(url, headers=headers, json=payload, timeout=60)
         if response.status_code == 200:
             res_json = response.json()
             raw_text = res_json['candidates'][0]['content']['parts'][0]['text']
@@ -188,25 +187,26 @@ The JSON object must strictly match this structure:
         else:
             st.error(f"Gemini API 호출 실패 (코드 {response.status_code}): {response.text}")
             return None
+    except requests.exceptions.Timeout:
+        st.error("⏳ 구글 인공지능 서버의 응답 시간이 초과되었습니다. 현재 서버 트래픽이 일시적으로 혼잡하오니 잠시 후 다시 시도해 주세요.")
+        return None
     except Exception as e:
         st.error(f"기획서 생성 중 예외 발생: {e}")
         return None
 
 # -----------------------------------------------------------------------------
-# 5. UI 및 스타일 정의 (콤팩트 너비, C 단축키 원천 차단, 입력창 복구, 줄간격 최적화)
+# 5. UI 및 스타일 정의
 # -----------------------------------------------------------------------------
 st.set_page_config(page_title="실시간 트렌드 마케팅 기획기", layout="centered")
 
 st.markdown("""
 <style>
-    /* 전체 미색 톤 배경 및 폰트 설정 */
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     html, body, [data-testid="stAppViewContainer"] {
         background-color: #FAF9F6 !important;
         font-family: 'Pretendard', sans-serif;
     }
     
-    /* 사이드바 어두운 톤 테마 */
     [data-testid="stSidebar"] {
         background-color: #1E293B !important;
         color: #F8FAFC !important;
@@ -215,7 +215,6 @@ st.markdown("""
         color: #F8FAFC !important;
     }
     
-    /* 오렌지 메인 액션 버튼 */
     .stButton>button {
         background-color: #FF5A1F !important;
         color: white !important;
@@ -232,7 +231,6 @@ st.markdown("""
         transform: translateY(-1px);
     }
 
-    /* 유령 사각 박스 완벽 제거 */
     .report-block, .download-card, .prompt-box {
         border: none !important;
         background: transparent !important;
@@ -241,7 +239,6 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* 키워드 및 플랫폼 선택 입력창 테두리 명확히 노출 */
     div[data-testid="stTextInput"] input, div[data-testid="stSelectbox"] select, div[data-testid="stSelectbox"] div[role="combobox"] {
         border: 2px solid #E2E8F0 !important;
         background-color: #FFFFFF !important;
@@ -255,7 +252,6 @@ st.markdown("""
         box-shadow: 0 0 0 2px rgba(255, 90, 31, 0.2) !important;
     }
 
-    /* 키워드 태그 정렬 (가로 정렬 유지, 강제 줄바꿈 방지) */
     .keyword-container {
         display: flex;
         flex-wrap: wrap;
@@ -272,7 +268,6 @@ st.markdown("""
         white-space: nowrap;
     }
 
-    /* 고클릭 감성 헤드라인 디자인 */
     .headline-item {
         background-color: #FFFFFF;
         border-left: 5px solid #FF5A1F;
@@ -285,7 +280,6 @@ st.markdown("""
         box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
-    /* 아웃라인 섹션 타이틀 및 가독성 좋은 본문 텍스트 */
     .section-title {
         font-size: 20px;
         font-weight: 700;
@@ -312,13 +306,11 @@ st.markdown("""
         margin-right: 8px;
     }
 
-    /* 제목 및 설명 영역 하단 마진 조정을 통해 입력창과의 줄간격을 넓혀줌 */
     .header-area {
         margin-bottom: 60px !important;
     }
 </style>
 
-<!-- Cmd+C / Ctrl+C 단축키 오작동 원천 차단 스크립트 -->
 <script>
     document.addEventListener('keydown', function(e) {
         if (e.key === 'c' || e.key === 'C') {
@@ -329,7 +321,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 6. 사이드바 UI (API 키 관리 - 최초 실행 시 공란 처리)
+# 6. 사이드바 UI
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.markdown("### 🔑 API 키 설정")
@@ -357,7 +349,7 @@ with st.sidebar:
     st.markdown("[👉 Google AI Studio 키 발급받기](https://aistudio.google.com/)")
 
 # -----------------------------------------------------------------------------
-# 7. 메인 화면 UI (1단계 대시보드 - 컴팩트 너비, 타이틀 하단 여백 추가)
+# 7. 메인 화면 UI
 # -----------------------------------------------------------------------------
 st.write("")
 st.markdown("""
@@ -367,7 +359,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 입력 폼 컬럼 구성 (시작 주제는 빈칸으로 로드)
+# 입력 폼 컬럼 구성
 col1, col2 = st.columns([3, 1])
 with col1:
     keyword = st.text_input("✍️ 기획할 주제 또는 핵심 키워드를 입력하세요.", value="", placeholder="예: 바이브코딩, 여름 침구 세트")
@@ -395,7 +387,7 @@ if start_btn:
                     st.success("🎉 실시간 마케팅 기획서 작성이 완료되었습니다!")
 
 # -----------------------------------------------------------------------------
-# 8. 분석 결과 렌더링 영역 (블로그용 / 인스타용 이원화 화면 제공)
+# 8. 분석 결과 렌더링 영역 및 이원화 로컬 자동 저장
 # -----------------------------------------------------------------------------
 if "marketing_plan" in st.session_state:
     plan = st.session_state.marketing_plan
@@ -437,11 +429,17 @@ if "marketing_plan" in st.session_state:
     # 4. 파일 자동 저장 및 단순 내보내기 다운로드
     st.markdown("<div class='section-title'>💾 마케팅 기획서 최종 다운로드</div>", unsafe_allow_html=True)
     
+    # 💡 [핵심 보완]: 파일명 뒤에 플랫폼 정보를 명확히 명시하여 중복 저장 방지 및 자동화 연결 지원
     date_str = datetime.now().strftime("%Y-%m-%d")
     clean_keyword = "".join([c for c in keyword_val if c.isalnum() or c in (' ', '_', '-')]).strip().replace(' ', '_')
-    filename = f"{date_str}_{clean_keyword}.json"
     
-    target_subfolder = BLOG_DIR if platform_val == "네이버 블로그" else INSTA_DIR
+    if platform_val == "네이버 블로그":
+        filename = f"{date_str}_{clean_keyword}_blog.json"
+        target_subfolder = BLOG_DIR
+    else:
+        filename = f"{date_str}_{clean_keyword}_insta.json"
+        target_subfolder = INSTA_DIR
+        
     full_local_path = os.path.join(target_subfolder, filename)
     
     json_data = json.dumps(plan, ensure_ascii=False, indent=2)
