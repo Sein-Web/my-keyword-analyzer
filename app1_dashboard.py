@@ -28,7 +28,7 @@ def save_api_key_locally(api_key):
         return False
 
 def load_api_key_locally():
-    """저장된 API 키가 있다면 불러옵니다."""
+    """저장된 API 키가 있다면 불러옵니다. 최초 미입력 상태 시 빈칸 반환."""
     if os.path.exists(KEY_FILE_PATH):
         try:
             with open(KEY_FILE_PATH, "r", encoding="utf-8") as f:
@@ -37,10 +37,6 @@ def load_api_key_locally():
                     return val
         except:
             pass
-            
-    if "GEMINI_API_KEY" in st.secrets:
-        return st.secrets["GEMINI_API_KEY"]
-        
     return ""
 
 # ---------------------------------------------------------------------------
@@ -134,11 +130,11 @@ st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     
-    /* 1. 기본 배경 및 글꼴 설정 */
+    /* 기본 배경 및 글꼴 설정 */
     html, body, [data-testid="stAppViewContainer"] {
         background-color: #FAF9F6 !important; /* 따뜻하고 연한 고급 미색 */
         font-family: 'Pretendard', sans-serif !important;
-        color: #2D3748 !important; /* 가독성을 위해 본문 색상을 약간 무겁게 조정 */
+        color: #2D3748 !important;
     }
     
     .main-container {
@@ -147,7 +143,7 @@ st.markdown("""
         padding: 40px 20px;
     }
     
-    /* 2. 기획 입력 박스 전용 카드 스타일 (결과창에서는 카드 투명화로 상자 제거) */
+    /* 기획 입력 박스 전용 카드 스타일 (결과창에서는 카드 투명화로 상자 제거) */
     .input-card {
         background: #FFFFFF;
         border: 1px solid #EAE6DF;
@@ -157,13 +153,12 @@ st.markdown("""
         margin-bottom: 35px;
     }
     
-    /* 3. 의미 없는 사각 상자 전면 제거 및 콘텐츠 자연스러운 경계선 디자인 */
-    .report-block {
+    /* 빈 사각 테두리 제거 전용 속성 */
+    [data-testid="stVerticalBlock"] > div {
         background: transparent !important;
         border: none !important;
-        padding: 0 !important;
         box-shadow: none !important;
-        margin-bottom: 45px;
+        padding: 0 !important;
     }
     
     .brand-title {
@@ -183,7 +178,7 @@ st.markdown("""
         line-height: 1.6;
     }
     
-    /* 섹션 타이틀 개선 */
+    /* 섹션 타이틀 */
     .section-title {
         font-size: 21px;
         font-weight: 800;
@@ -195,7 +190,7 @@ st.markdown("""
         letter-spacing: -0.5px;
     }
     
-    /* 4. 키워드 한 줄 나열 및 자동 너비 조절 시스템 */
+    /* 키워드 한 줄 나열 및 자동 너비 조절 시스템 */
     .keyword-container {
         display: flex;
         flex-wrap: wrap;
@@ -211,13 +206,13 @@ st.markdown("""
         border-radius: 30px;
         font-size: 14px;
         font-weight: 600;
-        white-space: nowrap; /* 키워드가 길어도 절대 내부 줄바꿈 방지 */
+        white-space: nowrap; /* 키워드가 길어도 내부 줄바꿈 완전 방지 */
         display: inline-block;
         border: 1px solid #E2E8F0;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     
-    /* 5. 헤드라인 및 본문 텍스트 세밀화 (줄간격 및 폰트 크기 대폭 향상) */
+    /* 헤드라인 서식 */
     .headline-item {
         font-size: 16.5px;
         font-weight: 700;
@@ -231,15 +226,16 @@ st.markdown("""
         box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
     
+    /* 4단계 구조 가독성 개선 */
     .framework-step {
         margin-bottom: 30px;
         line-height: 1.8;
     }
     
     .step-header {
-        font-size: 16px;
+        font-size: 16.5px;
         font-weight: 800;
-        color: #DD6B20; /* 주황빛 구분 컬러 */
+        color: #DD6B20;
         margin-bottom: 8px;
         display: flex;
         align-items: center;
@@ -253,6 +249,24 @@ st.markdown("""
         text-align: justify;
     }
     
+    /* 이미지 프롬프트 상자 (가로 스크롤 제거 및 자동 줄바꿈 처리) */
+    .prompt-box {
+        background-color: #EDF2F7 !important;
+        border: 1px solid #CBD5E0 !important;
+        border-radius: 8px !important;
+        padding: 15px 20px !important;
+        font-family: monospace !important;
+        font-size: 14px !important;
+        color: #2D3748 !important;
+        white-space: pre-wrap !important;       /* CSS3 스펙 자동 줄바꿈 강제 */
+        white-space: -moz-pre-wrap !important;  /* Firefox 보정 */
+        white-space: -pre-wrap !important;       /* Opera 4-6 보정 */
+        white-space: -o-pre-wrap !important;     /* Opera 7 보정 */
+        word-wrap: break-word !important;        /* 긴 단어도 끊어서 자동 줄바꿈 */
+        line-height: 1.5 !important;
+        margin-bottom: 30px !important;
+    }
+    
     /* 다운로드 전용 카드 */
     .download-card {
         background: #FFF7ED;
@@ -263,7 +277,7 @@ st.markdown("""
         margin-top: 50px;
     }
     
-    /* 6. 주황색 실행 버튼 */
+    /* 주황색 실행 버튼 */
     div.stButton > button {
         background-color: #FF5A1F !important;
         color: #FFFFFF !important;
@@ -280,7 +294,7 @@ st.markdown("""
         background-color: #E04E1A !important;
     }
     
-    /* 7. 사이드바 UI 정상화 (마우스 포커싱 및 텍스트 타이핑 즉시 가능) */
+    /* 사이드바 UI */
     [data-testid="stSidebar"] {
         background-color: #1E293B !important;
     }
@@ -307,15 +321,15 @@ with st.sidebar:
     st.markdown("### 🔑 API 키 설정")
     st.markdown("본 프로그램을 사용하려면 Gemini API 키가 필요합니다.")
     
+    # 디바이스에 기저장된 파일이 존재할 때만 자동 로드하고, 없을 경우 완벽히 빈칸("") 처리하여 깨끗하게 나타냄
     stored_key = load_api_key_locally()
     
-    # 수정된 안전한 input 바인딩
     user_api_key = st.text_input("Gemini API Key", value=stored_key, type="password", placeholder="여기를 눌러 제미나이 키를 붙여넣으세요")
     
     if st.button("🔑 API 키 로컬에 저장"):
         if user_api_key.strip():
             if save_api_key_locally(user_api_key):
-                st.success("API 키가 브라우저에 연동 및 안전하게 기기 저장되었습니다!")
+                st.success("API 키가 안전하게 연동 및 저장되었습니다!")
             else:
                 st.error("저장 중 오류 발생")
         else:
@@ -332,7 +346,7 @@ st.markdown('<div class="main-container">', unsafe_allow_html=True)
 st.markdown('<div class="brand-title">📈 1단계: 실시간 트렌드 마케팅 기획기</div>', unsafe_allow_html=True)
 st.markdown('<div class="brand-subtitle">실시간 검색 트렌드를 기반으로 고성능 마케팅 설계를 정교하게 구성합니다.</div>', unsafe_allow_html=True)
 
-# 기획 입력 영역 (이 영역에만 테두리 카드를 남겨 깔끔하게 격리)
+# 기획 입력 영역 (여기에만 테두리 적용)
 st.markdown('<div class="input-card">', unsafe_allow_html=True)
 col1, col2 = st.columns([3, 1])
 with col1:
@@ -344,7 +358,7 @@ run_button = st.button("🚀 실시간 시장 분석 및 고효율 마케팅 기
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------------
-# 7. 기획 실행 및 결과 표출 (박스 구조를 모두 제거하고 잡지식 레이아웃 구현)
+# 7. 기획 실행 및 결과 표출 (불필요한 투명 테두리 완전 제거)
 # ---------------------------------------------------------------------------
 if run_button:
     api_key_to_use = user_api_key if user_api_key else stored_key
@@ -372,41 +386,30 @@ if run_button:
                 status.update(label="❌ 기획 실패", state="error")
                 st.error(f"오류가 발생했습니다: {str(e)}")
 
-# 결과 출력 화면 구성
+# 결과 출력 화면 구성 (불필요한 빈 상자 레이아웃 완전 배제)
 if "plan_result" in st.session_state:
     data = st.session_state["plan_result"]
     kw = st.session_state["analyzed_keyword"]
     cat = st.session_state["analyzed_category"]
     
-    # -----------------------------------------------------------------------
-    # A. 타겟 및 연관 고효율 키워드 (가로 정렬 보완 버전)
-    # -----------------------------------------------------------------------
+    # A. 타겟 및 연관 고효율 키워드
     st.markdown('<div class="section-title">🎯 타겟 및 연관 고효율 키워드</div>', unsafe_allow_html=True)
-    
     keyword_html = '<div class="keyword-container">'
     for token in data.get("target_keywords", []):
         keyword_html += f'<span class="keyword-badge">#{token}</span>'
     keyword_html += '</div>'
-    
     st.markdown(keyword_html, unsafe_allow_html=True)
     
-    # -----------------------------------------------------------------------
     # B. 고클릭 감성 헤드라인 제안 (5종)
-    # -----------------------------------------------------------------------
     st.markdown('<div class="section-title">🔥 고클릭 감성 헤드라인 제안 (5종)</div>', unsafe_allow_html=True)
-    
     headline_html = ""
     for idx, title in enumerate(data.get("hooking_titles", []), 1):
         headline_html += f'<div class="headline-item">{idx}. {title}</div>'
-        
     st.markdown(headline_html, unsafe_allow_html=True)
     
-    # -----------------------------------------------------------------------
-    # C. 4단계 마케팅 심리 프레임워크 (사각 상자를 빼고, 전문 소제목&본문 구조로 변경)
-    # -----------------------------------------------------------------------
+    # C. 4단계 마케팅 심리 프레임워크 (상자 없이 여백과 타이포그래피만으로 아름답게 구분)
     st.markdown('<div class="section-title">📊 4단계 마케팅 심리 프레임워크 분석</div>', unsafe_allow_html=True)
     outline = data.get("outline", {})
-    
     framework_html = f"""
     <div class="framework-step">
         <div class="step-header">📢 1단계. 독자들의 잠재적 고통 자극 [문제제기]</div>
@@ -427,13 +430,11 @@ if "plan_result" in st.session_state:
     """
     st.markdown(framework_html, unsafe_allow_html=True)
 
-    # -----------------------------------------------------------------------
-    # D. AI 이미지 매칭 프롬프트 및 내보내기 버튼 구역
-    # -----------------------------------------------------------------------
+    # D. 이미지 매칭 프롬프트 (자동 줄바꿈 디자인 적용)
     st.markdown('<div class="section-title">🎨 추천 비주얼 이미지 프롬프트</div>', unsafe_allow_html=True)
-    st.code(data.get("image_prompt", ""), language="text")
+    st.markdown(f'<div class="prompt-box">{data.get("image_prompt", "")}</div>', unsafe_allow_html=True)
 
-    # 다운로드 구역 (박스 구성을 탈피하고 특별 수록 카드 디자인 적용)
+    # E. 다운로드 구역 (전용 카드)
     st.markdown('<div class="download-card">', unsafe_allow_html=True)
     st.markdown("<h3 style='margin-top:0; color:#1A202C;'>📥 2단계 본문 집필기용 기획서 내보내기</h3>", unsafe_allow_html=True)
     st.write("아래 버튼을 눌러 JSON 파일을 다운로드 받은 뒤, 곧바로 2단계 앱에 업로드하세요. 이 기획 흐름을 뼈대로 삼아 명품 1,800자 글을 집필합니다.")
